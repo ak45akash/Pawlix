@@ -23,5 +23,6 @@ export const serverEnvNames = [
 ] as const;
 
 export function getSiteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://pawlix.com";
+  const value = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  return value || "https://pawlix.com";
 }
