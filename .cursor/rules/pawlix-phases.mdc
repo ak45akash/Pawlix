@@ -1,0 +1,16 @@
+---
+description: Pawlix phase discipline and source of truth
+alwaysApply: true
+---
+
+# Pawlix phases
+
+The source of truth is `pet-commerce-master-build-spec.md`. Domain: pawlix.com.
+
+- Work only on the current approved phase. Do not implement later phases.
+- Current work: Phase 0 foundation is in place. SKU generation/permissions modules exist early because the owner requested them. Admin SKU UI still belongs to Phase 3.
+- Do not start Phase 1 (Supabase) until the user approves.
+- Prefer existing project utilities. Do not add component, form, animation, or state libraries for convenience.
+- Never expose `SUPABASE_SERVICE_ROLE_KEY` or other server secrets to the browser.
+- Never bypass RLS as a shortcut.
+- After a phase, summarize, then stop and wait for approval.

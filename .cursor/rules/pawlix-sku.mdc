@@ -1,0 +1,16 @@
+---
+description: SKU automation, manual admin edits, and catalogue edit/delete rights
+alwaysApply: true
+---
+
+# SKU and catalogue rights
+
+- Auto-generate SKUs on create when the admin leaves SKU blank: `PWL-{PET}-{CAT}-{NNNN}`.
+- Variants append a code: `PWL-DOG-FOOD-0001-1KG`.
+- Admins may type or edit any SKU. Manual SKUs are stored as `source: "manual"` and must not be overwritten by regeneration.
+- Normalize SKUs to uppercase hyphenated form. Enforce uniqueness across products and variants.
+- Use `resolveSku()` from `src/features/products/sku.ts`. Do not generate SKUs in React components.
+- ADMIN may create, edit, and delete catalogue entities. STAFF may create/edit (including SKUs) but not delete.
+- Authorize edit/delete on the server with `assertCapability()`. Hiding buttons is not enough.
+- If a product has order history, archive/soft-delete instead of hard delete.
+- Changing a SKU must not change historical order snapshots.
