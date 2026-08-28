@@ -28,7 +28,7 @@ import type {
   Subcategory,
 } from "@/types/catalog";
 
-const demoStore = createBrowserStore<DemoState>("pawlix-demo-state-v6", seedState);
+const demoStore = createBrowserStore<DemoState>("pawlix-demo-state-v7", seedState);
 
 type DemoContextValue = {
   state: DemoState;

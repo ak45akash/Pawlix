@@ -8,10 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { SmartImage } from "@/components/ui/smart-image";
 import { PageSeo } from "@/components/store/page-seo";
+import { storeImages } from "@/config/images";
 import { siteConfig, tricityLabel } from "@/config/site";
-
-const heroImage =
-  "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=2000&q=80";
 
 const helpTopics = [
   {
@@ -46,7 +44,7 @@ export default function ContactPage() {
         eyebrow="Contact"
         title="Questions welcome — no ticket numbers."
         description={`Reach the ${siteConfig.name} team in ${siteConfig.location.formatted}. We reply within one working day for orders, product advice, and pickup requests.`}
-        image={heroImage}
+        image={storeImages.pages.contact.hero}
         imageAlt="Friendly pet store counter ready to help customers"
         tall
       />
@@ -91,7 +89,7 @@ export default function ContactPage() {
 
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-canvas lg:aspect-auto lg:min-h-56">
               <SmartImage
-                src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1200&q=80"
+                src={storeImages.pages.contact.aside}
                 alt="Person with their dog — the kind of conversation we enjoy at Pawlix"
                 fill
                 className="object-cover"

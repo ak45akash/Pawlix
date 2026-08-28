@@ -4,10 +4,8 @@ import { PostCard } from "@/components/store/post-card";
 import { PageHero } from "@/components/store/page-hero";
 import { PageSeo } from "@/components/store/page-seo";
 import { publishedPosts } from "@/lib/content";
+import { storeImages } from "@/config/images";
 import { useDemo } from "@/lib/demo-store";
-
-const heroImage =
-  "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=2000&q=80";
 
 export default function BlogIndexPage() {
   const { state } = useDemo();
@@ -26,7 +24,7 @@ export default function BlogIndexPage() {
         eyebrow="Journal"
         title="Notes from the shop floor."
         description="How we buy, how we feed, and the small habits that make a calmer home — written by the people who stock the shelves."
-        image={heroImage}
+        image={storeImages.pages.blog.hero}
         imageAlt="Dogs on a walk — everyday pet care topics from Pawlix"
       />
 

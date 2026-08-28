@@ -1,4 +1,5 @@
 import type { AdminMember, AdminRoleRecord } from "@/types/catalog";
+import { storeImages } from "@/config/images";
 import { ALL_CAPABILITIES, ROLE_CAPABILITIES } from "@/lib/permissions/catalogue.ts";
 
 export const seedRoles: AdminRoleRecord[] = [
@@ -76,7 +77,7 @@ export function defaultSiteSeo() {
     title: "Pawlix — pet food, toys and accessories",
     description: "Premium pet food, toys, and accessories — thoughtfully chosen for everyday care.",
     keywords: ["pet food Chandigarh", "dog food", "cat food", "bird food", "pet toys", "pet accessories Mohali", "pet shop Panchkula", "pet store Tricity"],
-    ogImage: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
+    ogImage: storeImages.seo.ogDefault,
     locale: "en-IN",
     twitterHandle: "",
     focusKeywords: ["dog food", "cat food", "pet accessories", "homemade pet recipes"],

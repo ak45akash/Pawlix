@@ -4,10 +4,8 @@ import { PostCard } from "@/components/store/post-card";
 import { PageHero } from "@/components/store/page-hero";
 import { PageSeo } from "@/components/store/page-seo";
 import { publishedPosts } from "@/lib/content";
+import { storeImages } from "@/config/images";
 import { useDemo } from "@/lib/demo-store";
-
-const heroImage =
-  "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=2000&q=80";
 
 export default function RecipesIndexPage() {
   const { state } = useDemo();
@@ -26,7 +24,7 @@ export default function RecipesIndexPage() {
         eyebrow="Recipes"
         title="Simple bowls and toppers."
         description="Short kitchen notes for dogs, cats and birds — the kind of feeding ideas we share at the counter in Chandigarh."
-        image={heroImage}
+        image={storeImages.pages.recipes.hero}
         imageAlt="Fresh pet food ingredients — homemade recipe inspiration from Pawlix"
       />
 

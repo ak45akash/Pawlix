@@ -6,6 +6,7 @@ import { ProductGrid } from "@/components/store/product-grid";
 import { PostCard } from "@/components/store/post-card";
 import { Button } from "@/components/ui/button";
 import { SmartImage } from "@/components/ui/smart-image";
+import { storeImages } from "@/config/images";
 import { siteConfig } from "@/config/site";
 import { featuredPosts, shopHref } from "@/lib/content";
 import { storefrontProducts } from "@/lib/catalog";
@@ -14,11 +15,7 @@ import { getSiteUrl } from "@/config/env";
 import { PageSeo } from "@/components/store/page-seo";
 import { useDemo } from "@/lib/demo-store";
 
-const petImages: Record<string, string> = {
-  dog: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
-  cat: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1200&q=80",
-  bird: "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=1200&q=80",
-};
+const petImages = storeImages.pages.home.pets;
 
 export default function HomePage() {
   const { state } = useDemo();
@@ -40,7 +37,7 @@ export default function HomePage() {
       />
       <section className="relative min-h-[78vh] overflow-hidden bg-inverse text-on-inverse">
         <SmartImage
-          src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=2000&q=80"
+          src={storeImages.pages.home.hero}
           alt="Dogs resting indoors"
           fill
           priority
@@ -113,7 +110,7 @@ export default function HomePage() {
                 <Link key={pet.id} href={shopHref({ pet: pet.slug })} className="group relative overflow-hidden rounded-3xl">
                   <div className="relative aspect-[4/5]">
                     <SmartImage
-                      src={petImages[pet.slug] ?? petImages.dog}
+                      src={petImages[pet.slug as keyof typeof petImages] ?? petImages.dog}
                       alt={pet.name}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"

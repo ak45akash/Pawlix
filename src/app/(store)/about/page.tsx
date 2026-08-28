@@ -3,17 +3,11 @@ import Link from "next/link";
 import { ArrowRight, Heart, Leaf, Package, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SmartImage } from "@/components/ui/smart-image";
+import { storeImages } from "@/config/images";
 import { siteConfig } from "@/config/site";
 import { getSiteUrl } from "@/config/env";
 
-const images = {
-  hero: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=2000&q=80",
-  counter: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80",
-  dogFood: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=1200&q=80",
-  cat: "https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=1200&q=80",
-  bond: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1600&q=80",
-  bird: "https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=1200&q=80",
-};
+const images = storeImages.pages.about;
 
 export const metadata: Metadata = {
   title: "About Pawlix — Pet Food, Toys & Accessories in the Tricity",

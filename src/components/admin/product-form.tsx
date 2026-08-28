@@ -9,6 +9,7 @@ import { allSkus, categoriesForPet, productVariants, subcategoriesForCategory } 
 import { resolveSku, SkuError } from "@/features/products/sku.ts";
 import { createId, slugify } from "@/lib/slug";
 import { analyzeContent } from "@/lib/seo";
+import { storeImages } from "@/config/images";
 import { useDemo } from "@/lib/demo-store";
 import type { Product, ProductVariant } from "@/types/catalog";
 
@@ -87,8 +88,8 @@ export function ProductForm({ productId }: { productId?: string }) {
         categoryId: categoryId || categories[0]?.id,
         subcategoryId: subcategoryId || null,
         brandId: brandId || null,
-        image: image || "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
-        images: [image || "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80"],
+        image: image || storeImages.products.placeholder,
+        images: [image || storeImages.products.placeholder],
         mrp: Number(mrp),
         price: Number(price),
         cost: Number(cost),
