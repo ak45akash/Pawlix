@@ -18,8 +18,8 @@ import {
   Shield,
   ShoppingCart,
   Tag,
-  Users,
   UserCog,
+  Users,
   UtensilsCrossed,
   Warehouse,
 } from "lucide-react";
@@ -311,12 +311,19 @@ export const adminNavGroups: AdminNavGroup[] = [
     label: "Settings",
     items: [
       {
+        href: "/admin/account",
+        label: "Account",
+        description: "Change your admin password",
+        icon: UserCog,
+        keywords: ["password", "security", "profile", "login"],
+      },
+      {
         href: "/admin/settings",
         label: "Store settings",
-        description: "Shipping, GST, and general store options",
+        description: "Shipping, tax, contact details, and maintenance",
         icon: Settings,
         cap: "settings.edit",
-        keywords: ["configuration", "shipping", "gst", "general"],
+        keywords: ["configuration", "shipping", "gst", "contact", "maintenance"],
       },
     ],
   },

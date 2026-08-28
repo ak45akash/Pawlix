@@ -5,6 +5,14 @@ import { seedState } from "@/data/seed";
 import { resolveSku } from "@/features/products/sku.ts";
 import { createBrowserStore } from "@/lib/browser-store";
 import { allSkus, normalizeDemoState, productVariants } from "@/lib/catalog";
+import {
+  createPasswordReset,
+  credentialForMember,
+  findValidPasswordReset,
+  hashPassword,
+  validateNewPassword,
+  verifyPassword,
+} from "@/lib/admin-auth";
 import { assertCapability, type Capability } from "@/lib/permissions/catalogue.ts";
 import { capabilitiesOf, memberById, memberRole } from "@/lib/permissions/access.ts";
 import { createId, slugify } from "@/lib/slug";
@@ -33,7 +41,7 @@ import type {
   Subcategory,
 } from "@/types/catalog";
 
-const demoStore = createBrowserStore<DemoState>("pawlix-demo-state-v8", seedState);
+const demoStore = createBrowserStore<DemoState>("pawlix-demo-state-v10", seedState);
 
 type DemoContextValue = {
   state: DemoState;
@@ -77,6 +85,9 @@ type DemoContextValue = {
   saveMarketingCampaign: (item: Omit<MarketingCampaign, "id" | "createdAt"> & { id?: string; createdAt?: string }) => void;
   deleteMarketingCampaign: (id: string) => void;
   saveReferralProgram: (program: ReferralProgram) => void;
+  changeAdminPassword: (currentPassword: string, newPassword: string, confirmPassword: string) => void;
+  requestAdminPasswordReset: (email: string) => { email: string; token: string };
+  completeAdminPasswordReset: (token: string, password: string, confirmPassword: string) => void;
   saveRole: (item: Omit<AdminRoleRecord, "id" | "system"> & { id?: string; system?: boolean }) => void;
   deleteRole: (id: string) => void;
   saveMember: (item: Omit<AdminMember, "id" | "createdAt"> & { id?: string; createdAt?: string }) => void;
@@ -548,9 +559,19 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           const members = item.id
             ? current.members.map((row) => (row.id === item.id ? next : row))
             : [...current.members, next];
+          const adminCredentials = item.id
+            ? current.adminCredentials
+            : {
+                ...current.adminCredentials,
+                [next.id]: {
+                  passwordHash: hashPassword("admin123"),
+                  updatedAt: new Date().toISOString(),
+                },
+              };
           return {
             ...current,
             members,
+            adminCredentials,
             auditLogs: [log(actor, item.id ? "updated" : "created", "member", next.id, next.email), ...current.auditLogs],
           };
         });
@@ -570,12 +591,67 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           return {
             ...current,
             members: remaining,
+            adminCredentials: Object.fromEntries(
+              Object.entries(current.adminCredentials).filter(([memberId]) => memberId !== id),
+            ),
             auditLogs: [log(actor, "deleted", "member", id, member.email), ...current.auditLogs],
           };
         });
       },
       addOrder: (order) => {
         demoStore.set((current) => ({ ...current, orders: [order, ...current.orders] }));
+      },
+      changeAdminPassword: (currentPassword, newPassword, confirmPassword) => {
+        const memberId = state.currentMemberId;
+        const member = memberById(state.members, memberId);
+        if (!member) throw new Error("Sign in again to change your password.");
+        validateNewPassword(newPassword, confirmPassword);
+        const credential = credentialForMember(state, memberId);
+        if (!verifyPassword(currentPassword, credential.passwordHash)) {
+          throw new Error("Current password is incorrect.");
+        }
+        demoStore.set((current) => ({
+          ...current,
+          adminCredentials: {
+            ...current.adminCredentials,
+            [memberId]: { passwordHash: hashPassword(newPassword), updatedAt: new Date().toISOString() },
+          },
+          adminPasswordResets: current.adminPasswordResets.filter((row) => row.memberId !== memberId),
+          auditLogs: [log(member.name, "password.changed", "member", memberId, "Password updated"), ...current.auditLogs],
+        }));
+      },
+      requestAdminPasswordReset: (email) => {
+        const result = createPasswordReset(state, email);
+        if (!result) throw new Error("No active admin account matches that email.");
+        demoStore.set((current) => ({
+          ...current,
+          adminPasswordResets: [
+            result.reset,
+            ...current.adminPasswordResets.filter((row) => row.memberId !== result.member.id),
+          ],
+          auditLogs: [
+            log("System", "password.reset.requested", "member", result.member.id, result.member.email),
+            ...current.auditLogs,
+          ],
+        }));
+        return { email: result.member.email, token: result.reset.token };
+      },
+      completeAdminPasswordReset: (token, password, confirmPassword) => {
+        validateNewPassword(password, confirmPassword);
+        const match = findValidPasswordReset(state, token);
+        if (!match) throw new Error("This reset link is invalid or has expired.");
+        demoStore.set((current) => ({
+          ...current,
+          adminCredentials: {
+            ...current.adminCredentials,
+            [match.member.id]: { passwordHash: hashPassword(password), updatedAt: new Date().toISOString() },
+          },
+          adminPasswordResets: current.adminPasswordResets.filter((row) => row.id !== match.reset.id),
+          auditLogs: [
+            log(match.member.name, "password.reset.completed", "member", match.member.id, "Password reset"),
+            ...current.auditLogs,
+          ],
+        }));
       },
     };
   }, [state]);

@@ -1,5 +1,6 @@
 import type { DemoState } from "@/types/catalog";
 import { storeImages } from "@/config/images";
+import { defaultSiteSettings } from "@/data/settings-seed";
 import {
   defaultLocalListings,
   defaultReferralProgram,
@@ -7,6 +8,7 @@ import {
   seedMarketingCampaigns,
   seedNewsletterSubscribers,
 } from "@/data/marketing-seed";
+import { buildDefaultAdminCredentials } from "@/lib/admin-auth";
 import { seedPosts } from "@/data/posts-seed";
 import { defaultSiteSeo, seedMembers, seedRoles } from "@/data/roles-seed";
 
@@ -594,15 +596,12 @@ export const seedState: DemoState = {
     { id: "aud_1", actor: "Admin", action: "stock.adjusted", entity: "product", entityId: "prd_bowl", detail: "Offline sale −200 of 1kg", createdAt: "2026-08-18T16:00:00.000Z" },
     { id: "aud_2", actor: "Admin", action: "product.published", entity: "product", entityId: "prd_swing", detail: "Natural Swing published", createdAt: "2026-08-19T11:00:00.000Z" },
   ],
-  settings: {
-    shippingCharge: 79,
-    freeShippingThreshold: 1499,
-    deliveryNote: "Tricity (Chandigarh, Mohali, Panchkula): 1–2 days. Nearby pincodes: 2–4 days.",
-    gstEnabled: true,
-  },
+  settings: defaultSiteSettings(),
   announcements: seedAnnouncements,
   newsletterSubscribers: seedNewsletterSubscribers,
   localListings: defaultLocalListings(),
   marketingCampaigns: seedMarketingCampaigns,
   referralProgram: defaultReferralProgram(),
+  adminCredentials: buildDefaultAdminCredentials(seedMembers),
+  adminPasswordResets: [],
 };

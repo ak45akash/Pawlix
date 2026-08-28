@@ -244,11 +244,50 @@ export type AuditLog = {
   createdAt: string;
 };
 
+export type BusinessDayKey = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
+
+export type BusinessDayHours = {
+  closed: boolean;
+  open: string;
+  close: string;
+};
+
+export type WeeklyBusinessHours = {
+  timezone: string;
+} & Record<BusinessDayKey, BusinessDayHours>;
+
 export type SiteSettings = {
   shippingCharge: number;
   freeShippingThreshold: number;
   deliveryNote: string;
   gstEnabled: boolean;
+  gstRate: number;
+  storeName: string;
+  storeEmail: string;
+  storePhone: string;
+  storeAddress: string;
+  supportHours: string;
+  businessHours: WeeklyBusinessHours;
+  minOrderAmount: number;
+  codEnabled: boolean;
+  pickupEnabled: boolean;
+  orderPrefix: string;
+  lowStockAlertThreshold: number;
+  maintenanceMode: boolean;
+  maintenanceMessage: string;
+};
+
+export type AdminCredential = {
+  passwordHash: string;
+  updatedAt: string;
+};
+
+export type AdminPasswordReset = {
+  id: string;
+  memberId: string;
+  token: string;
+  expiresAt: string;
+  createdAt: string;
 };
 
 export type SiteAnnouncement = {
@@ -323,6 +362,8 @@ export type DemoState = {
   referralProgram: ReferralProgram;
   roles: AdminRoleRecord[];
   members: AdminMember[];
+  adminCredentials: Record<string, AdminCredential>;
+  adminPasswordResets: AdminPasswordReset[];
   currentMemberId: string;
   adminRole: string;
 };

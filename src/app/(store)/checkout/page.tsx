@@ -34,13 +34,17 @@ export default function CheckoutPage() {
 
   const subtotal = lines.reduce((sum, line) => sum + line.price * line.item.quantity, 0);
   const shipping = subtotal >= state.settings.freeShippingThreshold ? 0 : state.settings.shippingCharge;
-  const tax = Math.round(subtotal * 0.18);
-  const total = subtotal + shipping;
+  const tax = state.settings.gstEnabled ? Math.round(subtotal * (state.settings.gstRate / 100)) : 0;
+  const total = subtotal + shipping + tax;
 
   function placeOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!lines.length) {
       setError("Your cart is empty.");
+      return;
+    }
+    if (subtotal < state.settings.minOrderAmount) {
+      setError(`Minimum order is ${state.settings.minOrderAmount}. Add a little more to checkout.`);
       return;
     }
     const data = new FormData(event.currentTarget);

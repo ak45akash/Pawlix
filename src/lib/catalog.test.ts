@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { defaultSiteSettings } from "../data/settings-seed.ts";
 import { normalizeDemoState } from "./catalog.ts";
 
 const seedAnnouncements = [
@@ -66,6 +67,8 @@ test("normalizeDemoState fills marketing defaults when fields are missing", () =
   assert.equal(normalized.newsletterSubscribers.length, 0);
   assert.ok(normalized.localListings.businessName);
   assert.equal(normalized.referralProgram.enabled, false);
+  assert.equal(normalized.settings.storeName, defaultSiteSettings().storeName);
+  assert.ok(Object.keys(normalized.adminCredentials).length > 0);
 });
 
 test("normalizeDemoState preserves custom announcements and campaigns", () => {

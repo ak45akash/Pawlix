@@ -10,6 +10,8 @@ import { SmartImage } from "@/components/ui/smart-image";
 import { PageSeo } from "@/components/store/page-seo";
 import { storeImages } from "@/config/images";
 import { siteConfig, tricityLabel } from "@/config/site";
+import { formatBusinessHoursLines } from "@/lib/business-hours";
+import { useDemo } from "@/lib/demo-store";
 
 const helpTopics = [
   {
@@ -30,7 +32,9 @@ const helpTopics = [
 ];
 
 export default function ContactPage() {
+  const { state } = useDemo();
   const [sent, setSent] = useState(false);
+  const hourLines = formatBusinessHoursLines(state.settings.businessHours);
 
   return (
     <>
@@ -81,7 +85,14 @@ export default function ContactPage() {
               <li className="flex gap-3 rounded-xl border border-border bg-surface p-4">
                 <Clock className="mt-0.5 size-5 shrink-0 text-accent" />
                 <span>
-                  <span className="block font-medium">Mon – Sat · 10:00 – 19:00</span>
+                  {hourLines.map((line, index) => (
+                    <span
+                      key={line}
+                      className={index === 0 ? "block font-medium" : "mt-1 block text-sm text-ink-muted"}
+                    >
+                      {line}
+                    </span>
+                  ))}
                   <span className="mt-1 block text-sm text-ink-muted">We reply to email within one working day.</span>
                 </span>
               </li>

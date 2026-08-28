@@ -127,7 +127,7 @@ function TeamManager() {
         </table>
       </div>
       {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
-      <p className="mt-4 text-xs text-ink-muted">Demo sign-in uses these emails. Password is still admin123.</p>
+      <p className="mt-4 text-xs text-ink-muted">Team members sign in with their email and password. Default demo password is admin123 until changed.</p>
       {editing ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse/50 p-4">
           <div className="w-full max-w-md rounded-lg border border-border bg-surface p-5">

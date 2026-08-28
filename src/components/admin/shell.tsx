@@ -42,7 +42,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <p className="text-sm font-semibold tracking-tight">{siteConfig.name}</p>
         <p className="text-xs text-on-inverse/50">Administration</p>
       </div>
-      <nav className="flex-1 overflow-y-auto py-2 text-sm">
+      <nav className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain py-2 text-sm">
         {groups.map((group) => {
           const singleItem = group.items.length === 1 && group.id === "overview";
           const isExpanded = isGroupOpen(group);
@@ -109,6 +109,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <span className="text-xs text-on-inverse/50">Theme</span>
           <ThemeToggle className="text-on-inverse/70 hover:text-on-inverse" />
         </div>
+        <Link href="/admin/account" className="block px-2 py-2 text-xs text-on-inverse/50 hover:text-on-inverse">
+          Account & password
+        </Link>
         <Link href="/" className="block px-2 py-2 text-xs text-on-inverse/50 hover:text-on-inverse">
           View storefront
         </Link>
@@ -120,16 +123,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-dvh bg-canvas lg:grid lg:grid-cols-[252px_1fr]">
-      <aside className="hidden lg:block">{sidebar}</aside>
+    <div className="min-h-dvh bg-canvas lg:grid lg:h-dvh lg:grid-cols-[252px_1fr] lg:overflow-hidden">
+      <aside className="hidden lg:block lg:h-dvh lg:overflow-hidden">{sidebar}</aside>
       {open ? (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button type="button" className="absolute inset-0 bg-inverse/40" aria-label="Close menu" onClick={() => setOpen(false)} />
           <div className="relative h-full w-[min(18rem,88vw)] shadow-xl">{sidebar}</div>
         </div>
       ) : null}
-      <div className="flex min-h-dvh flex-col">
-        <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
+      <div className="flex min-h-dvh flex-col lg:h-dvh lg:min-h-0 lg:overflow-hidden">
+        <header className="z-40 shrink-0 border-b border-border bg-surface/95 backdrop-blur">
           <div className="flex items-center gap-3 px-4 py-3 lg:px-6">
             <button onClick={() => setOpen(true)} aria-label="Open menu" className="lg:hidden">
               <Menu className="size-5" />
@@ -144,7 +147,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <ThemeToggle className="hidden shrink-0 sm:inline-flex lg:hidden" />
           </div>
         </header>
-        <div className={cn("flex-1", isPostEditor ? "p-0" : "p-4 lg:p-8")}>{children}</div>
+        <div className={cn("min-h-0 flex-1 overflow-y-auto", isPostEditor ? "p-0" : "p-4 lg:p-8")}>{children}</div>
       </div>
     </div>
   );

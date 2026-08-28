@@ -1,6 +1,9 @@
 import type { Category, ContentPost, DemoState, Product, ProductVariant } from "@/types/catalog";
 import { defaultLocalListings, defaultReferralProgram, seedAnnouncements, seedMarketingCampaigns } from "@/data/marketing-seed";
+import { defaultSiteSettings } from "@/data/settings-seed";
 import { defaultSiteSeo, seedMembers, seedRoles } from "@/data/roles-seed";
+import { buildDefaultAdminCredentials } from "@/lib/admin-auth";
+import { formatBusinessHours, normalizeWeeklyBusinessHours } from "@/lib/business-hours";
 
 export function activeProducts(state: DemoState) {
   return state.products
@@ -96,6 +99,20 @@ export function normalizeDemoState(state: DemoState): DemoState {
     localListings: { ...defaultLocalListings(), ...(state.localListings ?? {}) },
     marketingCampaigns: Array.isArray(state.marketingCampaigns) && state.marketingCampaigns.length ? state.marketingCampaigns : seedMarketingCampaigns,
     referralProgram: { ...defaultReferralProgram(), ...(state.referralProgram ?? {}) },
+    settings: (() => {
+      const merged = { ...defaultSiteSettings(), ...(state.settings ?? {}) };
+      const businessHours = normalizeWeeklyBusinessHours(merged.businessHours);
+      return {
+        ...merged,
+        businessHours,
+        supportHours: formatBusinessHours(businessHours),
+      };
+    })(),
+    adminCredentials:
+      state.adminCredentials && Object.keys(state.adminCredentials).length
+        ? state.adminCredentials
+        : buildDefaultAdminCredentials(members),
+    adminPasswordResets: Array.isArray(state.adminPasswordResets) ? state.adminPasswordResets : [],
   };
 }
 
