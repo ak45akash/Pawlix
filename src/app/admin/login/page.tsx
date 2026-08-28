@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
 import { siteConfig } from "@/config/site";
+import { setAdminCookie } from "@/lib/admin-session";
 import { useDemo } from "@/lib/demo-store";
 import { ThemeToggle } from "@/lib/theme";
 
@@ -28,7 +29,7 @@ export default function AdminLoginPage() {
           const memberId = String(data.get("memberId"));
           const member = members.find((row) => row.id === memberId);
           if (!member) return;
-          document.cookie = `pawlix_admin=${member.id}; Path=/; Max-Age=604800; SameSite=Lax`;
+          setAdminCookie(member.id);
           setCurrentMember(member.id);
           router.push("/admin");
         }}

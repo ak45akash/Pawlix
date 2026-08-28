@@ -1,7 +1,5 @@
-import { htmlToPlainText } from "@/lib/html";
-import { postPath } from "@/lib/content";
-import { storefrontProducts } from "@/lib/catalog";
-import type { ContentPost, DemoState, Product, SiteSeo } from "@/types/catalog";
+import { htmlToPlainText } from "./html.ts";
+import type { ContentPost, DemoState, Product, SiteSeo } from "../types/catalog.ts";
 
 export type SeoStatus = "pass" | "warn" | "fail";
 
@@ -230,7 +228,7 @@ export function analyzeSite(state: DemoState): {
   const seo = state.seo;
   const posts = state.posts.filter((post) => !post.archived);
   const products = state.products.filter((product) => !product.archived);
-  const publishedProducts = storefrontProducts(state);
+  const publishedProducts = state.products.filter((product) => product.published && !product.archived);
   const postReports = posts.map((post) => ({ post, report: analyzePost(post) }));
   const productReports = products.map((product) => ({ product, report: analyzeProduct(product) }));
   const avgPost =
@@ -352,7 +350,7 @@ export function slugFromKeyword(keyword: string) {
 }
 
 export function postPublicPath(post: Pick<ContentPost, "kind" | "slug">) {
-  return postPath(post);
+  return post.kind === "recipe" ? `/recipes/${post.slug}` : `/blog/${post.slug}`;
 }
 
 export function siteJsonLd(seo: SiteSeo, url: string) {
@@ -381,7 +379,7 @@ export function siteJsonLd(seo: SiteSeo, url: string) {
 }
 
 export function articleJsonLd(post: ContentPost, url: string) {
-  const path = `${url}${postPath(post)}`;
+  const path = `${url}${postPublicPath(post)}`;
   if (post.kind === "recipe") {
     return {
       "@context": "https://schema.org",

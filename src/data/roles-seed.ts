@@ -1,37 +1,6 @@
 import type { AdminMember, AdminRoleRecord } from "@/types/catalog";
 import { ALL_CAPABILITIES, ROLE_CAPABILITIES } from "@/lib/permissions/catalogue.ts";
 
-const MANAGER_CAPABILITIES: Capability[] = [
-  "catalogue.create",
-  "catalogue.edit",
-  "sku.edit",
-  "sku.regenerate",
-  "content.create",
-  "content.edit",
-  "content.delete",
-  "content.publish",
-  "orders.view",
-  "orders.edit",
-  "customers.view",
-  "coupons.manage",
-  "inventory.adjust",
-  "team.view",
-  "settings.edit",
-  "seo.view",
-  "seo.edit",
-  "reports.view",
-  "audit.view",
-];
-
-const EDITOR_CAPABILITIES: Capability[] = [
-  "content.create",
-  "content.edit",
-  "content.publish",
-  "seo.view",
-  "seo.edit",
-  "reports.view",
-];
-
 export const seedRoles: AdminRoleRecord[] = [
   {
     id: "role_admin",

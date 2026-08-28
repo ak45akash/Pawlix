@@ -1,4 +1,4 @@
-import type { SkuSource } from "@/features/products/sku.ts";
+import type { SkuSource } from "../features/products/sku.ts";
 
 export type PetType = {
   id: string;
