@@ -4,7 +4,7 @@ import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNod
 import { seedState } from "@/data/seed";
 import { resolveSku } from "@/features/products/sku.ts";
 import { createBrowserStore } from "@/lib/browser-store";
-import { allSkus, productVariants } from "@/lib/catalog";
+import { allSkus, normalizeDemoState, productVariants } from "@/lib/catalog";
 import { assertCapability, type AdminRole } from "@/lib/permissions/catalogue.ts";
 import { createId } from "@/lib/slug";
 import type {
@@ -16,6 +16,7 @@ import type {
   HomepageSection,
   InventoryMovement,
   Order,
+  ContentPost,
   PetType,
   Product,
   ProductVariant,
@@ -23,7 +24,7 @@ import type {
   Subcategory,
 } from "@/types/catalog";
 
-const demoStore = createBrowserStore<DemoState>("pawlix-demo-state-v1", seedState);
+const demoStore = createBrowserStore<DemoState>("pawlix-demo-state-v4", seedState);
 
 type DemoContextValue = {
   state: DemoState;
@@ -35,10 +36,11 @@ type DemoContextValue = {
   saveSubcategory: (item: Omit<Subcategory, "id" | "archived"> & { id?: string }) => void;
   saveBrand: (item: Omit<Brand, "id" | "archived"> & { id?: string }) => void;
   deleteEntity: (
-    collection: "petTypes" | "categories" | "subcategories" | "brands" | "products" | "coupons",
+    collection: "petTypes" | "categories" | "subcategories" | "brands" | "products" | "coupons" | "posts",
     id: string,
   ) => void;
   saveProduct: (product: Product, variants: ProductVariant[]) => void;
+  savePost: (item: ContentPost) => void;
   duplicateProduct: (id: string) => string;
   adjustStock: (input: {
     productId: string;
@@ -72,7 +74,8 @@ function log(actor: string, action: string, entity: string, entityId: string, de
 }
 
 export function DemoProvider({ children }: { children: ReactNode }) {
-  const state = useSyncExternalStore(demoStore.subscribe, demoStore.getSnapshot, demoStore.getServerSnapshot);
+  const raw = useSyncExternalStore(demoStore.subscribe, demoStore.getSnapshot, demoStore.getServerSnapshot);
+  const state = useMemo(() => normalizeDemoState(raw), [raw]);
 
   const value = useMemo<DemoContextValue>(() => {
     const actor = state.adminRole === "ADMIN" ? "Admin" : "Staff";
@@ -167,6 +170,25 @@ export function DemoProvider({ children }: { children: ReactNode }) {
             auditLogs: [log(actor, already ? "updated" : "created", "product", product.id, product.name), ...current.auditLogs],
           };
         });
+      },
+      savePost: (item) => {
+        assertCapability(role, item.id && state.posts.some((row) => row.id === item.id) ? "catalogue.edit" : "catalogue.create");
+        try {
+          demoStore.set((current) => {
+            const list = current.posts ?? [];
+            const already = list.some((row) => row.id === item.id);
+            const posts = already
+              ? list.map((row) => (row.id === item.id ? item : row))
+              : [...list, item];
+            return {
+              ...current,
+              posts,
+              auditLogs: [log(actor, already ? "updated" : "created", item.kind, item.id, item.title), ...current.auditLogs],
+            };
+          });
+        } catch {
+          throw new Error("Could not save. Images may be too large — turn on Optimize images and try again.");
+        }
       },
       duplicateProduct: (id) => {
         assertCapability(role, "catalogue.create");

@@ -6,6 +6,7 @@ import { Field, Input, Select } from "@/components/ui/field";
 import { siteConfig } from "@/config/site";
 import type { AdminRole } from "@/lib/permissions/catalogue.ts";
 import { useDemo } from "@/lib/demo-store";
+import { ThemeToggle } from "@/lib/theme";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -13,6 +14,9 @@ export default function AdminLoginPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-4">
+      <div className="mb-8 flex justify-end">
+        <ThemeToggle />
+      </div>
       <p className="text-sm tracking-[0.2em] text-accent uppercase">{siteConfig.name}</p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight">Admin sign in</h1>
       <p className="mt-2 text-sm text-ink-muted">Demo access only. Supabase Auth comes later.</p>

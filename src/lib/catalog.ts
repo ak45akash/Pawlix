@@ -1,4 +1,4 @@
-import type { DemoState, Product, ProductVariant } from "@/types/catalog";
+import type { Category, DemoState, Product, ProductVariant } from "@/types/catalog";
 
 export function activeProducts(state: DemoState) {
   return state.products
@@ -55,9 +55,21 @@ export function categoryById(state: DemoState, id: string) {
   return state.categories.find((item) => item.id === id);
 }
 
+export function normalizeDemoState(state: DemoState): DemoState {
+  return {
+    ...state,
+    posts: Array.isArray(state.posts) ? state.posts : [],
+    categories: state.categories.map((item) => {
+      const legacy = item as Category & { petTypeId?: string };
+      if (Array.isArray(legacy.petTypeIds)) return item;
+      return { ...item, petTypeIds: legacy.petTypeId ? [legacy.petTypeId] : [] };
+    }),
+  };
+}
+
 export function categoriesForPet(state: DemoState, petTypeId: string) {
   return state.categories
-    .filter((item) => item.petTypeId === petTypeId && !item.archived)
+    .filter((item) => !item.archived && item.petTypeIds.includes(petTypeId))
     .sort((a, b) => a.sortOrder - b.sortOrder);
 }
 

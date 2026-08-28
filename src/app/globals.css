@@ -1,9 +1,16 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 html {
   background: var(--color-canvas);
   color: var(--color-ink);
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
@@ -22,3 +29,74 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+.rich-content {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-ink);
+}
+
+.rich-content.is-empty:before {
+  content: attr(data-placeholder);
+  color: var(--color-ink-muted);
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+.rich-content h2,
+.rich-content h3,
+.rich-content h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 1.5rem 0 0.6rem;
+}
+
+.rich-content h2 {
+  font-size: 1.6rem;
+}
+
+.rich-content h3 {
+  font-size: 1.25rem;
+}
+
+.rich-content p,
+.rich-content ul,
+.rich-content ol,
+.rich-content blockquote {
+  margin: 0.85rem 0;
+}
+
+.rich-content ul,
+.rich-content ol {
+  padding-left: 1.25rem;
+}
+
+.rich-content ul {
+  list-style: disc;
+}
+
+.rich-content ol {
+  list-style: decimal;
+}
+
+.rich-content blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1rem;
+  color: var(--color-ink-muted);
+}
+
+.rich-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.rich-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.25rem 0;
+  border-radius: 1rem;
+}
+

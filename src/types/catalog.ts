@@ -11,9 +11,9 @@ export type PetType = {
 
 export type Category = {
   id: string;
-  petTypeId: string;
   name: string;
   slug: string;
+  petTypeIds: string[];
   sortOrder: number;
   archived: boolean;
 };
@@ -181,6 +181,30 @@ export type HomepageSection = {
   sortOrder: number;
 };
 
+export type ContentKind = "blog" | "recipe";
+
+export type ContentPost = {
+  id: string;
+  kind: ContentKind;
+  title: string;
+  slug: string;
+  excerpt: string;
+  body: string;
+  coverImage: string;
+  petTypeIds: string[];
+  published: boolean;
+  featured: boolean;
+  readingMinutes: number;
+  servings: string;
+  prepMinutes: number | null;
+  cookMinutes: number | null;
+  seoTitle: string;
+  seoDescription: string;
+  publishedAt: string;
+  updatedAt: string;
+  archived: boolean;
+};
+
 export type AuditLog = {
   id: string;
   actor: string;
@@ -210,6 +234,7 @@ export type DemoState = {
   customers: Customer[];
   coupons: Coupon[];
   reviews: Review[];
+  posts: ContentPost[];
   homepageSections: HomepageSection[];
   auditLogs: AuditLog[];
   settings: SiteSettings;

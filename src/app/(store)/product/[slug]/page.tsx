@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,11 @@ import {
   productVariants,
   sellingPrice,
 } from "@/lib/catalog";
+import { shopHref } from "@/lib/content";
 import { formatInr } from "@/lib/format";
 import { useCart } from "@/lib/cart-store";
 import { useDemo } from "@/lib/demo-store";
+import { SmartImage } from "@/components/ui/smart-image";
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -46,7 +48,7 @@ export default function ProductPage() {
     <main className="mx-auto grid max-w-6xl gap-10 px-4 py-10 lg:grid-cols-2 lg:px-6">
       <div>
         <div className="relative aspect-square overflow-hidden rounded-lg bg-canvas">
-          <Image src={images[image]} alt={product.name} fill className="object-cover" sizes="50vw" />
+          <SmartImage src={images[image]} alt={product.name} fill className="object-cover" sizes="50vw" />
         </div>
         {images.length > 1 ? (
           <div className="mt-3 flex gap-2">
@@ -56,7 +58,7 @@ export default function ProductPage() {
                 onClick={() => setImage(index)}
                 className={`relative size-16 overflow-hidden rounded-md border ${image === index ? "border-accent" : "border-border"}`}
               >
-                <Image src={src} alt="" fill className="object-cover" />
+                <SmartImage src={src} alt="" fill className="object-cover" />
               </button>
             ))}
           </div>
@@ -64,7 +66,13 @@ export default function ProductPage() {
       </div>
       <div>
         <p className="text-sm text-ink-muted">
-          {pet?.name} · {category?.name}
+          <Link href={shopHref({ pet: pet?.slug })} className="hover:text-ink">
+            {pet?.name}
+          </Link>
+          {" · "}
+          <Link href={shopHref({ category: category?.slug })} className="hover:text-ink">
+            {category?.name}
+          </Link>
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">{product.name}</h1>
         <p className="mt-3 text-xl">
@@ -80,7 +88,7 @@ export default function ProductPage() {
                 <button
                   key={item.id}
                   onClick={() => setVariantId(item.id)}
-                  className={`rounded-md border px-3 py-2 text-sm ${selectedVariantId === item.id ? "border-ink bg-ink text-white" : "border-border"}`}
+                  className={`rounded-md border px-3 py-2 text-sm ${selectedVariantId === item.id ? "border-ink bg-ink text-canvas" : "border-border"}`}
                 >
                   {item.name}
                 </button>

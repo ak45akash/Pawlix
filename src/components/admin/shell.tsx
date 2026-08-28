@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   BarChart3,
+  BookOpen,
   ClipboardList,
   FolderTree,
   LayoutDashboard,
@@ -15,11 +16,13 @@ import {
   ShoppingCart,
   Tag,
   Users,
+  UtensilsCrossed,
   Warehouse,
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { canDeleteCatalogue } from "@/lib/permissions/catalogue.ts";
 import { useDemo } from "@/lib/demo-store";
+import { ThemeToggle } from "@/lib/theme";
 import { cn } from "@/lib/utils/cn";
 
 const nav = [
@@ -34,6 +37,8 @@ const nav = [
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/content", label: "Homepage", icon: ClipboardList },
+  { href: "/admin/blog", label: "Blog", icon: BookOpen },
+  { href: "/admin/recipes", label: "Recipes", icon: UtensilsCrossed },
   { href: "/admin/reviews", label: "Reviews", icon: ClipboardList },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
   { href: "/admin/audit", label: "Audit log", icon: ClipboardList },
@@ -45,6 +50,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { role } = useDemo();
   const [open, setOpen] = useState(false);
+  const isPostEditor = /^\/admin\/(blog|recipes)\/.+$/.test(pathname);
 
   function logout() {
     document.cookie = "pawlix_admin=; Path=/; Max-Age=0";
@@ -52,10 +58,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   const sidebar = (
-    <div className="flex h-full flex-col bg-[#1f1a16] text-[#f6f1ea]">
-      <div className="border-b border-white/10 px-5 py-4">
+    <div className="flex h-full flex-col bg-inverse text-on-inverse">
+      <div className="border-b border-on-inverse/10 px-5 py-4">
         <p className="text-sm font-semibold tracking-tight">{siteConfig.name} Admin</p>
-        <p className="mt-1 text-xs text-white/50">{role} · {canDeleteCatalogue(role) ? "edit & delete" : "edit only"}</p>
+        <p className="mt-1 text-xs text-on-inverse/50">{role} · {canDeleteCatalogue(role) ? "edit & delete" : "edit only"}</p>
       </div>
       <nav className="flex-1 overflow-y-auto py-3 text-sm">
         {nav.map((item) => {
@@ -66,8 +72,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               href={item.href}
               onClick={() => setOpen(false)}
               className={cn(
-                "flex items-center gap-2 px-5 py-2 text-white/70 hover:bg-white/5 hover:text-white",
-                active && "bg-white/10 text-white",
+                "flex items-center gap-2 px-5 py-2 text-on-inverse/70 hover:bg-on-inverse/5 hover:text-on-inverse",
+                active && "bg-on-inverse/10 text-on-inverse",
               )}
             >
               <item.icon className="size-4" />
@@ -76,11 +82,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           );
         })}
       </nav>
-      <div className="border-t border-white/10 p-3">
-        <Link href="/" className="block px-2 py-2 text-xs text-white/50 hover:text-white">
+      <div className="border-t border-on-inverse/10 p-3">
+        <div className="flex items-center justify-between px-2 py-2">
+          <span className="text-xs text-on-inverse/50">Theme</span>
+          <ThemeToggle className="text-on-inverse/70 hover:text-on-inverse" />
+        </div>
+        <Link href="/" className="block px-2 py-2 text-xs text-on-inverse/50 hover:text-on-inverse">
           View storefront
         </Link>
-        <button onClick={logout} className="flex w-full items-center gap-2 px-2 py-2 text-left text-sm text-white/70 hover:text-white">
+        <button onClick={logout} className="flex w-full items-center gap-2 px-2 py-2 text-left text-sm text-on-inverse/70 hover:text-on-inverse">
           <LogOut className="size-4" /> Sign out
         </button>
       </div>
@@ -97,8 +107,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <Menu className="size-5" />
           </button>
           <span className="font-medium">Admin</span>
+          <ThemeToggle className="ml-auto" />
         </header>
-        <div className="p-4 lg:p-8">{children}</div>
+        <div className={isPostEditor ? "p-0" : "p-4 lg:p-8"}>{children}</div>
       </div>
     </div>
   );

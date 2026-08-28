@@ -56,7 +56,7 @@ export default function CouponsPage() {
         </table>
       </div>
       {open ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-inverse/50 p-4">
           <form
             className="w-full max-w-md space-y-4 rounded-lg bg-surface p-5"
             onSubmit={(event) => {
