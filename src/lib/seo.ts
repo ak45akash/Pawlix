@@ -1,5 +1,301 @@
 import { htmlToPlainText } from "./html.ts";
+import { siteConfig } from "../config/site.ts";
 import type { ContentPost, DemoState, Product, SiteSeo } from "../types/catalog.ts";
+
+export type SeoSuggestion = {
+  id: string;
+  priority: "high" | "medium" | "low";
+  title: string;
+  detail: string;
+};
+
+export type KeywordGroup = {
+  id: string;
+  label: string;
+  hint: string;
+  terms: string[];
+};
+
+export type WeakPageFix = {
+  label: string;
+  href: string;
+  score: number;
+  fix: string;
+};
+
+export type SeoImprovementPlan = {
+  score: number;
+  checks: SeoCheck[];
+  pages: { id: string; kind: "site" | "blog" | "recipe" | "product"; label: string; href: string; score: number }[];
+  suggestions: SeoSuggestion[];
+  keywords: KeywordGroup[];
+  weakPages: WeakPageFix[];
+};
+
+const CHECK_ADVICE: Record<string, Omit<SeoSuggestion, "id">> = {
+  "focus-keyword": {
+    priority: "high",
+    title: "Set a focus keyword",
+    detail: "Choose one phrase per page (e.g. “dog food Chandigarh”). Use the same wording in the SEO title, meta description, URL slug, and opening paragraph.",
+  },
+  "keyword-title": {
+    priority: "high",
+    title: "Put the keyword in the SEO title",
+    detail: "Move the focus keyword near the start of the title. Example: “Dog Food in Chandigarh | Pawlix”. Keep the title between 30 and 60 characters.",
+  },
+  "title-length": {
+    priority: "medium",
+    title: "Adjust the SEO title length",
+    detail: "Aim for 30–60 characters so the full title shows in Google. Trim filler words or add the city name if it is too short.",
+  },
+  "meta-length": {
+    priority: "medium",
+    title: "Lengthen or trim the meta description",
+    detail: "Write 120–160 characters that mention the keyword once and explain why someone should click — delivery area, quality, or use case.",
+  },
+  "keyword-meta": {
+    priority: "high",
+    title: "Mention the keyword in the meta description",
+    detail: "Include the focus phrase naturally in the description. Do not repeat it more than once.",
+  },
+  "keyword-slug": {
+    priority: "medium",
+    title: "Match the URL slug to the keyword",
+    detail: "Use hyphenated words from the focus phrase (e.g. daily-bowl-chicken-rice). Avoid underscores and long slugs.",
+  },
+  "slug-shape": {
+    priority: "low",
+    title: "Shorten the URL slug",
+    detail: "Keep slugs under 60 characters, lowercase, hyphen-separated. Remove stop words if the slug is too long.",
+  },
+  "keyword-intro": {
+    priority: "high",
+    title: "Use the keyword in the first paragraph",
+    detail: "Search engines weigh the opening copy. Mention the focus phrase within the first 280 characters of body text.",
+  },
+  density: {
+    priority: "medium",
+    title: "Balance keyword density",
+    detail: "Aim for 0.5–2.5% density. If it is too low, add the phrase once or twice in subheadings. If too high, rewrite sentences so it reads naturally.",
+  },
+  length: {
+    priority: "high",
+    title: "Add more body copy",
+    detail: "Blog posts need roughly 700+ words, recipes 400+, products 120+. Add useful sections (ingredients, tips, FAQs) rather than padding.",
+  },
+  headings: {
+    priority: "medium",
+    title: "Add H2 subheadings",
+    detail: "Break the article into scannable sections with descriptive H2s that include related terms (e.g. “What we look for in dog food”).",
+  },
+  cover: {
+    priority: "medium",
+    title: "Add a cover or product image",
+    detail: "Set a unique image for sharing and image search. Use a descriptive file name and alt text that mentions the product or topic.",
+  },
+  alts: {
+    priority: "medium",
+    title: "Write alt text for inline images",
+    detail: "Every inline image needs alt text describing what is shown. Include the keyword only when it fits naturally.",
+  },
+  links: {
+    priority: "low",
+    title: "Add internal links",
+    detail: "Link to /shop, related products, or another journal post. One or two contextual links help crawlers and shoppers.",
+  },
+  "site-title": {
+    priority: "high",
+    title: "Improve the site SEO title",
+    detail: `Include “pet food” or “pet store” and the Tricity (${siteConfig.location.formatted}). Example: “Pawlix — Pet Food & Accessories in Chandigarh, Mohali & Panchkula”.`,
+  },
+  "site-desc": {
+    priority: "high",
+    title: "Expand the site meta description",
+    detail: "Write 120–160 characters covering what you sell, who you serve, and delivery. Mention dogs, cats, and birds if space allows.",
+  },
+  "site-keywords": {
+    priority: "low",
+    title: "Add more site keywords",
+    detail: "List 4–8 comma-separated phrases you want the shop associated with — mix product types and local terms.",
+  },
+  "og-image": {
+    priority: "medium",
+    title: "Set a default share image",
+    detail: "Add a 1200×630 px image URL for social previews when a page has no cover image.",
+  },
+  "focus-library": {
+    priority: "high",
+    title: "Build a focus keyword library",
+    detail: "Add 3–6 phrases the whole shop should rank for (e.g. dog food, cat food, pet store Chandigarh). Assign one to each post and product.",
+  },
+  "post-keyword": {
+    priority: "high",
+    title: "Add focus keywords to posts",
+    detail: "Open each blog and recipe in the audit table and set a focus keyword from your library before publishing.",
+  },
+  "post-avg": {
+    priority: "high",
+    title: "Raise average post scores",
+    detail: "Edit the lowest-scoring posts first: complete SEO title, meta, keyword, H2s, and word count. Link each post to a shop category.",
+  },
+  "product-meta": {
+    priority: "medium",
+    title: "Complete product SEO fields",
+    detail: "Every product needs a unique SEO title, meta description, and focus keyword (often the product category + pet type).",
+  },
+  "product-avg": {
+    priority: "medium",
+    title: "Improve product descriptions for search",
+    detail: "Expand short descriptions with ingredients, sizing, and use cases. Unique copy per SKU beats repeating the brand blurb.",
+  },
+  indexable: {
+    priority: "medium",
+    title: "Publish more catalogue items",
+    detail: "Search engines need enough product URLs to treat the site as a store. Publish at least six products with complete metadata.",
+  },
+  robots: {
+    priority: "low",
+    title: "Sitemap and robots are configured",
+    detail: "No action needed — robots.txt and sitemap.xml are served automatically.",
+  },
+  locale: {
+    priority: "low",
+    title: "Set the site locale",
+    detail: "Use en-IN for an Indian English storefront so language signals stay consistent.",
+  },
+};
+
+export function suggestionsFromChecks(checks: SeoCheck[]): SeoSuggestion[] {
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  return checks
+    .filter((item) => item.status !== "pass")
+    .map((item) => {
+      const advice = CHECK_ADVICE[item.id];
+      return {
+        id: item.id,
+        priority: item.status === "fail" ? (advice?.priority ?? "high") : "medium",
+        title: advice?.title ?? item.label,
+        detail: advice?.detail ?? item.detail,
+      };
+    })
+    .sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+}
+
+export function buildKeywordRecommendations(state: DemoState): KeywordGroup[] {
+  const focus = uniqueTerms([...state.seo.focusKeywords, ...state.seo.keywords]);
+  const local = uniqueTerms([
+    `pet store ${siteConfig.location.storeCity}`,
+    ...siteConfig.location.cities.flatMap((city) => [
+      `pet shop ${city}`,
+      `dog food ${city}`,
+      `cat food ${city}`,
+      `bird food ${city}`,
+    ]),
+    `pet store ${siteConfig.location.label}`,
+    "pet accessories Tricity",
+  ]);
+  const catalogueText = [
+    ...state.products.filter((product) => !product.archived).map((product) => `${product.name} ${product.shortDescription} ${product.focusKeyword}`),
+    ...state.posts.filter((post) => !post.archived).map((post) => `${post.title} ${post.excerpt} ${post.focusKeyword}`),
+  ].join(" ");
+  const catalogue = extractKeywords(catalogueText, 12).map((hit) => hit.term);
+  const starter = uniqueTerms([
+    "dog food",
+    "cat food",
+    "bird food",
+    "pet toys",
+    "pet accessories",
+    "homemade pet recipes",
+    "premium pet food",
+    ...focus,
+  ]);
+
+  return [
+    {
+      id: "focus",
+      label: "Focus keywords",
+      hint: "Assign one of these to each post and product. Save your library above to keep the list in sync.",
+      terms: focus.length >= 3 ? focus : starter,
+    },
+    {
+      id: "local",
+      label: "Local search (Tricity)",
+      hint: "Use in homepage copy, About, Contact, and product meta for city-level searches.",
+      terms: local,
+    },
+    {
+      id: "catalogue",
+      label: "From your catalogue",
+      hint: "Terms already appearing in product and content copy — good candidates for focus keywords.",
+      terms: catalogue.length ? catalogue : starter.slice(0, 8),
+    },
+    {
+      id: "gaps",
+      label: "Suggested for pages without a keyword",
+      hint: "Pages missing a focus keyword — open in the audit table and assign one of these.",
+      terms: uniqueTerms(
+        [
+          ...state.posts
+            .filter((post) => !post.archived && !post.focusKeyword.trim())
+            .map((post) => suggestKeywordForPost(post, state)),
+          ...state.products
+            .filter((product) => !product.archived && !product.focusKeyword.trim())
+            .map((product) => extractKeywords(`${product.name} ${product.shortDescription}`, 1)[0]?.term ?? product.name.toLowerCase()),
+        ].filter(Boolean) as string[],
+      ).slice(0, 10),
+    },
+  ].filter((group) => group.terms.length > 0);
+}
+
+export function siteImprovementPlan(state: DemoState): SeoImprovementPlan {
+  const site = analyzeSite(state);
+  const suggestions = suggestionsFromChecks(site.checks);
+  const weakPages = site.pages
+    .filter((page) => page.score < 75)
+    .slice(0, 6)
+    .map((page) => {
+      const post = state.posts.find((item) => item.id === page.id);
+      const product = state.products.find((item) => item.id === page.id);
+      const report = post ? analyzePost(post) : product ? analyzeProduct(product) : null;
+      const fix = report ? primaryFixFromReport(report) : "Open this page and complete SEO title, meta, and focus keyword.";
+      return { label: page.label, href: page.href, score: page.score, fix };
+    });
+
+  return {
+    score: site.score,
+    checks: site.checks,
+    pages: site.pages,
+    suggestions,
+    keywords: buildKeywordRecommendations(state),
+    weakPages,
+  };
+}
+
+function primaryFixFromReport(report: SeoReport) {
+  const tips = suggestionsFromChecks(report.checks);
+  return tips[0]?.detail ?? "Review SEO fields and add more descriptive copy.";
+}
+
+function suggestKeywordForPost(post: ContentPost, state: DemoState) {
+  const hits = extractKeywords(`${post.title} ${post.excerpt}`, 3);
+  if (hits.length) return hits[0].term;
+  const pet = state.petTypes.find((item) => post.petTypeIds.includes(item.id));
+  if (post.kind === "recipe") return pet ? `homemade ${pet.slug} food` : "homemade pet recipes";
+  return pet ? `${pet.slug} care` : "pet care";
+}
+
+function uniqueTerms(terms: string[]) {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const term of terms) {
+    const normalized = term.trim().toLowerCase();
+    if (!normalized || seen.has(normalized)) continue;
+    seen.add(normalized);
+    out.push(term.trim());
+  }
+  return out;
+}
+
 
 export type SeoStatus = "pass" | "warn" | "fail";
 

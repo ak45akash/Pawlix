@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { RequireCapability } from "@/components/admin/guard";
-import { SeoChecks, SeoMeter, SerpPreview, scoreTone } from "@/components/admin/seo-meter";
-import { analyzeContent, analyzeSite, extractKeywords, serpPreview, slugFromKeyword } from "@/lib/seo";
+import { SeoChecks, KeywordGroups, SeoMeter, SeoSuggestions, SerpPreview, scoreTone } from "@/components/admin/seo-meter";
+import { analyzeContent, extractKeywords, serpPreview, siteImprovementPlan, slugFromKeyword, suggestionsFromChecks } from "@/lib/seo";
 import { useDemo } from "@/lib/demo-store";
 
 export default function SeoPage() {
@@ -21,7 +21,7 @@ export default function SeoPage() {
 function SeoTools() {
   const { state, saveSeo, can } = useDemo();
   const canEdit = can("seo.edit");
-  const site = useMemo(() => analyzeSite(state), [state]);
+  const plan = useMemo(() => siteImprovementPlan(state), [state]);
   const [title, setTitle] = useState(state.seo.title);
   const [description, setDescription] = useState(state.seo.description);
   const [keywords, setKeywords] = useState(state.seo.keywords.join(", "));
@@ -49,8 +49,15 @@ function SeoTools() {
     seoDescription: toolMeta,
     focusKeyword: toolKeyword,
   });
+  const draftSuggestions = useMemo(() => suggestionsFromChecks(draftReport.checks), [draftReport.checks]);
   const extracted = extractKeywords(`${toolTitle} ${toolMeta} ${toolBody}`, 10);
-  const audit = site.pages.filter((page) => filter === "all" || page.kind === filter);
+  const audit = plan.pages.filter((page) => filter === "all" || page.kind === filter);
+
+  function addFocusKeyword(term: string) {
+    const existing = splitList(focusKeywords);
+    if (existing.some((item) => item.toLowerCase() === term.toLowerCase())) return;
+    setFocusKeywords([...existing, term].join(", "));
+  }
 
   function persist() {
     setError("");
@@ -77,17 +84,59 @@ function SeoTools() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">SEO</h1>
           <p className="mt-1 max-w-xl text-sm text-ink-muted">
-            Score the whole site, blogs, recipes and products. Use the tools below to check titles, keywords and snippets.
+            Score the whole site, blogs, recipes and products. Follow the suggestions below to raise your rating and pick keywords that fit the Tricity.
           </p>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3">
-          <SeoMeter score={site.score} />
+          <SeoMeter score={plan.score} />
           <div>
             <p className="text-sm font-medium">Site score</p>
             <p className="text-xs text-ink-muted">Based on metadata, content, and index coverage.</p>
           </div>
         </div>
       </div>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-lg border border-border bg-surface p-5">
+          <h2 className="font-medium">How to improve your score</h2>
+          <p className="mt-1 text-sm text-ink-muted">Prioritized fixes from your current site checks. Work through high items first.</p>
+          <div className="mt-4">
+            <SeoSuggestions items={plan.suggestions.slice(0, 8)} />
+          </div>
+        </div>
+        <div className="rounded-lg border border-border bg-surface p-5">
+          <h2 className="font-medium">Recommended keywords</h2>
+          <p className="mt-1 text-sm text-ink-muted">
+            {canEdit ? "Click a keyword to add it to your focus library." : "Keywords to target across the shop and local search."}
+          </p>
+          <div className="mt-4">
+            <KeywordGroups groups={plan.keywords} onSelect={canEdit ? addFocusKeyword : undefined} />
+          </div>
+        </div>
+      </section>
+
+      {plan.weakPages.length ? (
+        <section className="rounded-lg border border-border bg-surface p-5">
+          <h2 className="font-medium">Pages to fix first</h2>
+          <p className="mt-1 text-sm text-ink-muted">Lowest-scoring content — each row includes the single change that would help most.</p>
+          <ul className="mt-4 space-y-3 text-sm">
+            {plan.weakPages.map((page) => (
+              <li key={page.href} className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-3 last:border-0 last:pb-0">
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium">{page.label}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-ink-muted">{page.fix}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-3">
+                  <Badge tone={scoreTone(page.score)}>{page.score}</Badge>
+                  <Link href={page.href} className="text-accent">
+                    Edit
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="rounded-lg border border-border bg-surface p-5">
@@ -131,7 +180,7 @@ function SeoTools() {
           <div className="rounded-lg border border-border bg-surface p-5">
             <h2 className="font-medium">Site checks</h2>
             <div className="mt-3">
-              <SeoChecks checks={site.checks} />
+              <SeoChecks checks={plan.checks} />
             </div>
           </div>
         </div>
@@ -224,7 +273,13 @@ function SeoTools() {
             description={draftReport.description}
           />
           <div className="rounded-lg border border-border bg-surface p-5">
-            <h3 className="text-sm font-medium">Suggested keywords</h3>
+            <h3 className="text-sm font-medium">How to improve this draft</h3>
+            <div className="mt-3 max-h-48 overflow-y-auto">
+              <SeoSuggestions items={draftSuggestions.slice(0, 5)} />
+            </div>
+          </div>
+          <div className="rounded-lg border border-border bg-surface p-5">
+            <h3 className="text-sm font-medium">Keywords from this draft</h3>
             {extracted.length ? (
               <div className="mt-3 flex flex-wrap gap-2">
                 {extracted.map((item) => (

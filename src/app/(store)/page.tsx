@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { ArrowRight, Leaf, Package, RotateCcw, Truck } from "lucide-react";
 import { ProductGrid } from "@/components/store/product-grid";
 import { PostCard } from "@/components/store/post-card";
@@ -18,11 +19,13 @@ import { useDemo } from "@/lib/demo-store";
 const petImages = storeImages.pages.home.pets;
 
 export default function HomePage() {
-  const { state } = useDemo();
+  const { state, addNewsletterSubscriber } = useDemo();
   const featured = storefrontProducts(state).filter((product) => product.featured);
   const journals = featuredPosts(state, "blog").slice(0, 3);
   const recipes = featuredPosts(state, "recipe").slice(0, 3);
   const reviews = state.reviews.filter((review) => review.published).slice(0, 3);
+  const [newsletterNotice, setNewsletterNotice] = useState("");
+  const [newsletterError, setNewsletterError] = useState("");
   const categories = state.categories.filter((item) => !item.archived).sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
@@ -194,18 +197,31 @@ export default function HomePage() {
           <div>
             <h2 className="font-display text-3xl md:text-4xl">A short note, occasionally.</h2>
             <p className="mt-3 max-w-md text-on-inverse/70">
-              Restocks, recipes and journal pieces. No daily noise. Email sending comes later — this is the list UI for now.
+              Restocks, recipes and journal pieces. No daily noise. Join the list — we will email when sending is live.
             </p>
+            {newsletterNotice ? <p className="mt-2 text-sm text-success">{newsletterNotice}</p> : null}
+            {newsletterError ? <p className="mt-2 text-sm text-danger">{newsletterError}</p> : null}
           </div>
           <form
             className="flex gap-2"
             onSubmit={(event) => {
               event.preventDefault();
-              event.currentTarget.reset();
+              setNewsletterNotice("");
+              setNewsletterError("");
+              const data = new FormData(event.currentTarget);
+              const email = String(data.get("email") ?? "");
+              try {
+                addNewsletterSubscriber(email, "homepage");
+                event.currentTarget.reset();
+                setNewsletterNotice("You are on the list. Thank you.");
+              } catch (caught) {
+                setNewsletterError(caught instanceof Error ? caught.message : "Could not subscribe.");
+              }
             }}
           >
             <input
               type="email"
+              name="email"
               required
               placeholder="Email address"
               className="h-12 flex-1 rounded-full border border-on-inverse/15 bg-on-inverse/5 px-5 text-sm outline-none placeholder:text-on-inverse/40"

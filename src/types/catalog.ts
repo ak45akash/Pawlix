@@ -251,6 +251,54 @@ export type SiteSettings = {
   gstEnabled: boolean;
 };
 
+export type SiteAnnouncement = {
+  id: string;
+  message: string;
+  href: string;
+  enabled: boolean;
+  startsAt: string;
+  endsAt: string;
+  sortOrder: number;
+};
+
+export type NewsletterSubscriber = {
+  id: string;
+  email: string;
+  source: "homepage" | "checkout" | "footer" | "admin";
+  subscribedAt: string;
+};
+
+export type LocalListings = {
+  businessName: string;
+  phone: string;
+  email: string;
+  address: string;
+  googleBusinessUrl: string;
+  instagramUrl: string;
+  whatsappNumber: string;
+  listingNotes: string;
+};
+
+export type MarketingCampaign = {
+  id: string;
+  name: string;
+  path: string;
+  source: string;
+  medium: string;
+  campaign: string;
+  couponCode: string;
+  notes: string;
+  createdAt: string;
+};
+
+export type ReferralProgram = {
+  enabled: boolean;
+  referrerReward: string;
+  refereeReward: string;
+  minOrder: number;
+  terms: string;
+};
+
 export type DemoState = {
   petTypes: PetType[];
   categories: Category[];
@@ -268,6 +316,11 @@ export type DemoState = {
   auditLogs: AuditLog[];
   settings: SiteSettings;
   seo: SiteSeo;
+  announcements: SiteAnnouncement[];
+  newsletterSubscribers: NewsletterSubscriber[];
+  localListings: LocalListings;
+  marketingCampaigns: MarketingCampaign[];
+  referralProgram: ReferralProgram;
   roles: AdminRoleRecord[];
   members: AdminMember[];
   currentMemberId: string;

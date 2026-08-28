@@ -18,17 +18,22 @@ import type {
   DemoState,
   HomepageSection,
   InventoryMovement,
+  NewsletterSubscriber,
   Order,
   ContentPost,
   PetType,
   Product,
   ProductVariant,
+  LocalListings,
+  MarketingCampaign,
+  ReferralProgram,
   Review,
+  SiteAnnouncement,
   SiteSeo,
   Subcategory,
 } from "@/types/catalog";
 
-const demoStore = createBrowserStore<DemoState>("pawlix-demo-state-v7", seedState);
+const demoStore = createBrowserStore<DemoState>("pawlix-demo-state-v8", seedState);
 
 type DemoContextValue = {
   state: DemoState;
@@ -64,6 +69,14 @@ type DemoContextValue = {
   saveReview: (item: Review) => void;
   saveSettings: (settings: DemoState["settings"]) => void;
   saveSeo: (seo: SiteSeo) => void;
+  saveAnnouncement: (item: Omit<SiteAnnouncement, "id"> & { id?: string }) => void;
+  deleteAnnouncement: (id: string) => void;
+  addNewsletterSubscriber: (email: string, source?: NewsletterSubscriber["source"]) => void;
+  removeNewsletterSubscriber: (id: string) => void;
+  saveLocalListings: (listings: LocalListings) => void;
+  saveMarketingCampaign: (item: Omit<MarketingCampaign, "id" | "createdAt"> & { id?: string; createdAt?: string }) => void;
+  deleteMarketingCampaign: (id: string) => void;
+  saveReferralProgram: (program: ReferralProgram) => void;
   saveRole: (item: Omit<AdminRoleRecord, "id" | "system"> & { id?: string; system?: boolean }) => void;
   deleteRole: (id: string) => void;
   saveMember: (item: Omit<AdminMember, "id" | "createdAt"> & { id?: string; createdAt?: string }) => void;
@@ -353,6 +366,110 @@ export function DemoProvider({ children }: { children: ReactNode }) {
           ...current,
           seo,
           auditLogs: [log(actor, "updated", "seo", "site", seo.title), ...current.auditLogs],
+        }));
+      },
+      saveAnnouncement: (item) => {
+        requireCap(state, "seo.edit");
+        demoStore.set((current) => {
+          const next: SiteAnnouncement = {
+            id: item.id ?? createId("ann"),
+            message: item.message.trim(),
+            href: item.href.trim() || "/shop",
+            enabled: item.enabled,
+            startsAt: item.startsAt,
+            endsAt: item.endsAt,
+            sortOrder: item.sortOrder,
+          };
+          const announcements = item.id
+            ? current.announcements.map((row) => (row.id === item.id ? next : row))
+            : [...current.announcements, next];
+          return {
+            ...current,
+            announcements,
+            auditLogs: [log(actor, item.id ? "updated" : "created", "announcement", next.id, next.message.slice(0, 40)), ...current.auditLogs],
+          };
+        });
+      },
+      deleteAnnouncement: (id) => {
+        requireCap(state, "seo.edit");
+        demoStore.set((current) => ({
+          ...current,
+          announcements: current.announcements.filter((row) => row.id !== id),
+          auditLogs: [log(actor, "deleted", "announcement", id, "Announcement removed"), ...current.auditLogs],
+        }));
+      },
+      addNewsletterSubscriber: (email, source = "homepage") => {
+        const normalized = email.trim().toLowerCase();
+        if (!normalized || !normalized.includes("@")) throw new Error("Enter a valid email.");
+        demoStore.set((current) => {
+          if (current.newsletterSubscribers.some((row) => row.email === normalized)) return current;
+          const next: NewsletterSubscriber = {
+            id: createId("nl"),
+            email: normalized,
+            source,
+            subscribedAt: new Date().toISOString(),
+          };
+          return {
+            ...current,
+            newsletterSubscribers: [next, ...current.newsletterSubscribers],
+            auditLogs: [log(actor, "created", "newsletter", next.id, normalized), ...current.auditLogs],
+          };
+        });
+      },
+      removeNewsletterSubscriber: (id) => {
+        requireCap(state, "seo.edit");
+        demoStore.set((current) => ({
+          ...current,
+          newsletterSubscribers: current.newsletterSubscribers.filter((row) => row.id !== id),
+          auditLogs: [log(actor, "deleted", "newsletter", id, "Subscriber removed"), ...current.auditLogs],
+        }));
+      },
+      saveLocalListings: (listings) => {
+        requireCap(state, "seo.edit");
+        demoStore.set((current) => ({
+          ...current,
+          localListings: listings,
+          auditLogs: [log(actor, "updated", "local_listings", "site", listings.businessName), ...current.auditLogs],
+        }));
+      },
+      saveMarketingCampaign: (item) => {
+        requireCap(state, "seo.edit");
+        demoStore.set((current) => {
+          const next: MarketingCampaign = {
+            id: item.id ?? createId("camp"),
+            name: item.name.trim(),
+            path: item.path.trim() || "/",
+            source: item.source.trim(),
+            medium: item.medium.trim(),
+            campaign: item.campaign.trim(),
+            couponCode: item.couponCode.trim().toUpperCase(),
+            notes: item.notes.trim(),
+            createdAt: item.createdAt ?? new Date().toISOString(),
+          };
+          const marketingCampaigns = item.id
+            ? current.marketingCampaigns.map((row) => (row.id === item.id ? next : row))
+            : [...current.marketingCampaigns, next];
+          return {
+            ...current,
+            marketingCampaigns,
+            auditLogs: [log(actor, item.id ? "updated" : "created", "campaign", next.id, next.name), ...current.auditLogs],
+          };
+        });
+      },
+      deleteMarketingCampaign: (id) => {
+        requireCap(state, "seo.edit");
+        demoStore.set((current) => ({
+          ...current,
+          marketingCampaigns: current.marketingCampaigns.filter((row) => row.id !== id),
+          auditLogs: [log(actor, "deleted", "campaign", id, "Campaign removed"), ...current.auditLogs],
+        }));
+      },
+      saveReferralProgram: (program) => {
+        requireCap(state, "seo.edit");
+        demoStore.set((current) => ({
+          ...current,
+          referralProgram: program,
+          auditLogs: [log(actor, "updated", "referral", "site", program.enabled ? "Enabled" : "Disabled"), ...current.auditLogs],
         }));
       },
       saveRole: (item) => {

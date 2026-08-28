@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { analyzeContent, extractKeywords, slugFromKeyword } from "./seo.ts";
+import { analyzeContent, extractKeywords, slugFromKeyword, suggestionsFromChecks } from "./seo.ts";
 
 test("extractKeywords skips stop words and ranks repeats", () => {
   const hits = extractKeywords("dog food for the dog and cat food for the cat food bowl");
@@ -40,4 +40,15 @@ test("a complete blog scores higher than an empty draft", () => {
 
 test("slugFromKeyword hyphenates a phrase", () => {
   assert.equal(slugFromKeyword("Dog Food"), "dog-food");
+});
+
+test("suggestionsFromChecks returns actionable tips for failing checks", () => {
+  const tips = suggestionsFromChecks([
+    { id: "focus-keyword", label: "Focus keyword set", status: "fail", detail: "Add a focus keyword.", weight: 10 },
+    { id: "title-length", label: "Title length", status: "pass", detail: "45 characters.", weight: 8 },
+  ]);
+  assert.equal(tips.length, 1);
+  assert.equal(tips[0]?.id, "focus-keyword");
+  assert.equal(tips[0]?.priority, "high");
+  assert.equal(tips[0]?.title, "Set a focus keyword");
 });

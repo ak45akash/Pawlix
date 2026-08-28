@@ -1,4 +1,5 @@
 import type { Category, ContentPost, DemoState, Product, ProductVariant } from "@/types/catalog";
+import { defaultLocalListings, defaultReferralProgram, seedAnnouncements, seedMarketingCampaigns } from "@/data/marketing-seed";
 import { defaultSiteSeo, seedMembers, seedRoles } from "@/data/roles-seed";
 
 export function activeProducts(state: DemoState) {
@@ -90,6 +91,11 @@ export function normalizeDemoState(state: DemoState): DemoState {
       if (Array.isArray(legacy.petTypeIds)) return item;
       return { ...item, petTypeIds: legacy.petTypeId ? [legacy.petTypeId] : [] };
     }),
+    announcements: Array.isArray(state.announcements) && state.announcements.length ? state.announcements : seedAnnouncements,
+    newsletterSubscribers: Array.isArray(state.newsletterSubscribers) ? state.newsletterSubscribers : [],
+    localListings: { ...defaultLocalListings(), ...(state.localListings ?? {}) },
+    marketingCampaigns: Array.isArray(state.marketingCampaigns) && state.marketingCampaigns.length ? state.marketingCampaigns : seedMarketingCampaigns,
+    referralProgram: { ...defaultReferralProgram(), ...(state.referralProgram ?? {}) },
   };
 }
 

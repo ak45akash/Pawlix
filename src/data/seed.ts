@@ -1,5 +1,12 @@
 import type { DemoState } from "@/types/catalog";
 import { storeImages } from "@/config/images";
+import {
+  defaultLocalListings,
+  defaultReferralProgram,
+  seedAnnouncements,
+  seedMarketingCampaigns,
+  seedNewsletterSubscribers,
+} from "@/data/marketing-seed";
 import { seedPosts } from "@/data/posts-seed";
 import { defaultSiteSeo, seedMembers, seedRoles } from "@/data/roles-seed";
 
@@ -593,4 +600,9 @@ export const seedState: DemoState = {
     deliveryNote: "Tricity (Chandigarh, Mohali, Panchkula): 1–2 days. Nearby pincodes: 2–4 days.",
     gstEnabled: true,
   },
+  announcements: seedAnnouncements,
+  newsletterSubscribers: seedNewsletterSubscribers,
+  localListings: defaultLocalListings(),
+  marketingCampaigns: seedMarketingCampaigns,
+  referralProgram: defaultReferralProgram(),
 };
