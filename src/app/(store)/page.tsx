@@ -6,6 +6,7 @@ import { ProductGrid } from "@/components/store/product-grid";
 import { PostCard } from "@/components/store/post-card";
 import { Button } from "@/components/ui/button";
 import { SmartImage } from "@/components/ui/smart-image";
+import { siteConfig } from "@/config/site";
 import { featuredPosts, shopHref } from "@/lib/content";
 import { storefrontProducts } from "@/lib/catalog";
 import { articleJsonLd, siteJsonLd } from "@/lib/seo";
@@ -47,13 +48,14 @@ export default function HomePage() {
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-inverse/80 via-inverse/45 to-transparent" />
-        <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-end px-4 py-20 lg:px-6">
+        <div className="store-shell relative flex min-h-[78vh] flex-col justify-end py-20">
           <p className="text-sm tracking-[0.28em] text-on-inverse/70 uppercase">Pawlix.com</p>
           <h1 className="font-display mt-4 max-w-2xl text-5xl leading-[1.05] md:text-7xl">
             Care that feels considered.
           </h1>
           <p className="mt-5 max-w-lg text-lg leading-relaxed text-on-inverse/80">
-            Food, toys and everyday pieces for dogs, cats and birds — chosen for quality, not noise.
+            Food, toys and everyday pieces for dogs, cats and birds — chosen for quality, not noise. Serving{" "}
+            {siteConfig.location.formatted}.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/shop">
@@ -69,9 +71,9 @@ export default function HomePage() {
       </section>
 
       <section className="border-b border-border bg-surface">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
+        <div className="store-shell grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { icon: Truck, title: "Free shipping", body: "On orders above ₹1,499" },
+            { icon: Truck, title: "Tricity delivery", body: "Chandigarh, Mohali & Panchkula · free above ₹1,499" },
             { icon: Leaf, title: "Short lists", body: "What we stock is what we stand behind" },
             { icon: Package, title: "One inventory", body: "Website and counter share the same stock" },
             { icon: RotateCcw, title: "Easy returns", body: "7-day returns on unused items" },
@@ -87,7 +89,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 lg:px-6 lg:py-20">
+      <section className="store-shell py-16 lg:py-20">
         <div className="mb-10 flex items-end justify-between">
           <div>
             <p className="text-sm tracking-[0.2em] text-accent uppercase">This week</p>
@@ -101,7 +103,7 @@ export default function HomePage() {
       </section>
 
       <section className="bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16 lg:px-6 lg:py-20">
+        <div className="store-shell py-16 lg:py-20">
           <p className="text-sm tracking-[0.2em] text-accent uppercase">Filter the shop</p>
           <h2 className="font-display mt-2 text-3xl md:text-4xl">Shop by pet</h2>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
@@ -140,7 +142,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 lg:px-6 lg:py-20">
+      <section className="store-shell py-16 lg:py-20">
         <div className="mb-10 flex items-end justify-between">
           <div>
             <p className="text-sm tracking-[0.2em] text-accent uppercase">Journal</p>
@@ -150,7 +152,7 @@ export default function HomePage() {
             All posts <ArrowRight className="size-4" />
           </Link>
         </div>
-        <div className="grid gap-10 md:grid-cols-3">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {journals.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
@@ -158,7 +160,7 @@ export default function HomePage() {
       </section>
 
       <section className="bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16 lg:px-6 lg:py-20">
+        <div className="store-shell py-16 lg:py-20">
           <div className="mb-10 flex items-end justify-between">
             <div>
               <p className="text-sm tracking-[0.2em] text-accent uppercase">Kitchen</p>
@@ -168,7 +170,7 @@ export default function HomePage() {
               All recipes <ArrowRight className="size-4" />
             </Link>
           </div>
-          <div className="grid gap-10 md:grid-cols-3">
+          <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {recipes.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
@@ -176,7 +178,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 lg:px-6 lg:py-20">
+      <section className="store-shell py-16 lg:py-20">
         <p className="text-sm tracking-[0.2em] text-accent uppercase">From customers</p>
         <h2 className="font-display mt-2 text-3xl md:text-4xl">Quiet praise</h2>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
@@ -191,7 +193,7 @@ export default function HomePage() {
       </section>
 
       <section className="border-t border-border bg-inverse text-on-inverse">
-        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-16 lg:grid-cols-2 lg:px-6">
+        <div className="store-shell grid items-center gap-8 py-16 lg:grid-cols-2">
           <div>
             <h2 className="font-display text-3xl md:text-4xl">A short note, occasionally.</h2>
             <p className="mt-3 max-w-md text-on-inverse/70">

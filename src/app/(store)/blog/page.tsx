@@ -10,7 +10,7 @@ export default function BlogIndexPage() {
   const posts = publishedPosts(state, "blog");
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12 lg:px-6 lg:py-16">
+    <main className="store-shell py-12 lg:py-16">
       <PageSeo
         title="Pet care journal"
         description="Notes from the Pawlix shop floor: how we choose food, toys and everyday habits for dogs, cats and birds."
@@ -22,7 +22,7 @@ export default function BlogIndexPage() {
       <p className="mt-4 max-w-xl text-ink-muted">
         How we buy, how we feed, and the small habits that make a calmer home. Written in the admin, published here.
       </p>
-      <div className="mt-12 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-12 grid gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}

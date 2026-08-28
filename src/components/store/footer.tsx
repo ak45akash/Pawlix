@@ -5,10 +5,11 @@ import { shopHref } from "@/lib/content";
 export function StoreFooter() {
   return (
     <footer className="mt-auto border-t border-border bg-surface">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
+      <div className="store-shell grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="font-display text-xl">{siteConfig.name}</p>
           <p className="mt-3 text-sm leading-relaxed text-ink-muted">{siteConfig.description}</p>
+          <p className="mt-2 text-sm text-ink-muted">{siteConfig.location.formatted}</p>
         </div>
         <div>
           <p className="text-sm font-medium">Shop</p>

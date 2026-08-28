@@ -18,7 +18,7 @@ export default function RecipePostPage() {
 
   if (!post || !post.published) {
     return (
-      <main className="mx-auto max-w-2xl px-4 py-16">
+      <main className="store-shell py-16">
         <h1 className="font-display text-3xl">Recipe not found</h1>
         <Link href="/recipes" className="mt-4 inline-block text-sm text-accent">
           Back to recipes
@@ -28,7 +28,7 @@ export default function RecipePostPage() {
   }
 
   return (
-    <article className="mx-auto max-w-6xl px-4 py-12 lg:px-6">
+    <article className="store-shell py-12">
       <PageSeo
         title={post.seoTitle || post.title}
         description={post.seoDescription || post.excerpt}

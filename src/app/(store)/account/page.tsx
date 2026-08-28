@@ -16,7 +16,8 @@ export default function AccountPage() {
 
   if (!customer) {
     return (
-      <main className="mx-auto max-w-md px-4 py-16">
+      <main className="store-shell py-16">
+        <div className="max-w-md">
         <h1 className="text-3xl font-semibold tracking-tight">Account</h1>
         <p className="mt-2 text-sm text-ink-muted">Demo login — no password required yet.</p>
         <form
@@ -40,12 +41,13 @@ export default function AccountPage() {
         <p className="mt-4 text-sm text-ink-muted">
           New here? <Link href="/register">Create an account</Link>
         </p>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 lg:px-6">
+    <main className="store-shell py-10">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Hello, {customer.name.split(" ")[0]}</h1>

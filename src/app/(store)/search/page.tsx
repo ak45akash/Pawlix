@@ -15,7 +15,7 @@ function SearchResults() {
   });
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 lg:px-6">
+    <main className="store-shell py-10">
       <h1 className="text-3xl font-semibold tracking-tight">Search</h1>
       <p className="mt-2 text-sm text-ink-muted">
         {query ? `Results for “${query}”` : "Enter a search from the header."}

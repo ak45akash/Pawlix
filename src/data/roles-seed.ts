@@ -75,7 +75,7 @@ export function defaultSiteSeo() {
   return {
     title: "Pawlix — pet food, toys and accessories",
     description: "Premium pet food, toys, and accessories — thoughtfully chosen for everyday care.",
-    keywords: ["pet food India", "dog food", "cat food", "bird food", "pet toys", "pet accessories Mumbai"],
+    keywords: ["pet food Chandigarh", "dog food", "cat food", "bird food", "pet toys", "pet accessories Mohali", "pet shop Panchkula", "pet store Tricity"],
     ogImage: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
     locale: "en-IN",
     twitterHandle: "",

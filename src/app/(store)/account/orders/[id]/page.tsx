@@ -12,14 +12,14 @@ export default function OrderDetailPage() {
 
   if (!order) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-16">
+      <main className="store-shell py-16">
         <p>Order not found.</p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 lg:px-6">
+    <main className="store-shell py-10">
       <Link href="/account" className="text-sm text-ink-muted">
         ← Account
       </Link>

@@ -37,7 +37,7 @@ export function StoreHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-surface/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3.5 lg:px-6">
+      <div className="store-shell flex items-center gap-4 py-3.5">
         <button className="lg:hidden" aria-label="Menu" onClick={() => setOpen(true)}>
           <Menu className="size-5" />
         </button>
@@ -58,7 +58,7 @@ export function StoreHeader() {
             </Link>
           ))}
         </nav>
-        <form onSubmit={search} className="ml-auto hidden max-w-xs flex-1 lg:block">
+        <form onSubmit={search} className="ml-auto hidden min-w-0 flex-1 lg:block lg:max-w-md xl:max-w-xl">
           <div className="relative">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted" />
             <input

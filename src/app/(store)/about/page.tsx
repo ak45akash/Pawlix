@@ -16,14 +16,16 @@ const images = {
 };
 
 export const metadata: Metadata = {
-  title: "About Pawlix — Pet Food, Toys & Accessories in India",
+  title: "About Pawlix — Pet Food, Toys & Accessories in the Tricity",
   description:
-    "Pawlix is an Indian pet store for dog food, cat food, bird seed, toys and accessories. Honest ingredients, shared online and in-store inventory, and care that treats pets as family.",
+    "Pawlix is a Tricity pet store in Chandigarh, Mohali and Panchkula for dog food, cat food, bird seed, toys and accessories. Honest ingredients, shared online and in-store inventory, and care that treats pets as family.",
   keywords: [
-    "pet store India",
-    "pet shop Mumbai",
-    "dog food online India",
-    "cat food India",
+    "pet store Chandigarh",
+    "pet shop Mohali",
+    "pet shop Panchkula",
+    "pet store Tricity",
+    "dog food Chandigarh",
+    "cat food Mohali",
     "bird food",
     "pet toys",
     "pet accessories",
@@ -51,7 +53,7 @@ function aboutJsonLd() {
         url: `${url}/about`,
         name: "About Pawlix",
         description:
-          "Learn how Pawlix selects pet food, toys and accessories for dogs, cats and birds across India.",
+          "Learn how Pawlix selects pet food, toys and accessories for dogs, cats and birds in Chandigarh, Mohali and Panchkula.",
         isPartOf: { "@id": `${url}/#website` },
         about: { "@id": `${url}/#organization` },
       },
@@ -62,7 +64,7 @@ function aboutJsonLd() {
         url,
         description: siteConfig.description,
         image: images.hero,
-        areaServed: "IN",
+        areaServed: siteConfig.location.cities,
         knowsAbout: ["Dog food", "Cat food", "Bird food", "Pet toys", "Pet accessories"],
       },
     ],
@@ -77,22 +79,22 @@ export default function AboutPage() {
       <section className="relative min-h-[70vh] overflow-hidden bg-inverse text-on-inverse">
         <SmartImage src={images.hero} alt="A relaxed dog at home with soft natural light" fill priority className="object-cover opacity-50" sizes="100vw" />
         <div className="absolute inset-0 bg-gradient-to-t from-inverse via-inverse/60 to-inverse/20" />
-        <div className="relative mx-auto max-w-6xl px-4 py-24 lg:px-6 lg:py-32">
+        <div className="relative store-shell py-24 lg:py-32">
           <p className="text-sm tracking-[0.28em] text-on-inverse/70 uppercase">About {siteConfig.name}</p>
           <h1 className="font-display mt-4 max-w-3xl text-4xl leading-tight md:text-6xl">
             A pet store built on quiet care, not loud claims.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-on-inverse/80">
-            {siteConfig.name} is an Indian pet retail store for{" "}
+            {siteConfig.name} is a Tricity pet retail store for{" "}
             <strong className="font-medium text-on-inverse">dog food, cat food, bird seed, toys and accessories</strong>. We keep
             the catalogue short, the photography honest, and the buying experience calm — online at {siteConfig.domain} and at
-            our counter in Mumbai.
+            our counter in {siteConfig.location.formatted}.
           </p>
         </div>
       </section>
 
       <section className="border-b border-border bg-surface">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-6 lg:py-24">
+        <div className="store-shell grid gap-10 py-16 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-24">
           <div>
             <p className="text-sm tracking-[0.2em] text-accent uppercase">What we believe</p>
             <h2 className="font-display mt-3 text-3xl md:text-4xl">Good pet care should feel straightforward.</h2>
@@ -133,7 +135,7 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-canvas">
-        <div className="mx-auto max-w-6xl px-4 py-16 lg:px-6 lg:py-24">
+        <div className="store-shell py-16 lg:py-24">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16">
             <div className="relative aspect-[5/4] overflow-hidden rounded-2xl">
               <SmartImage
@@ -169,7 +171,7 @@ export default function AboutPage() {
       </section>
 
       <section className="border-y border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16 lg:px-6 lg:py-20">
+        <div className="store-shell py-16 lg:py-20">
           <p className="text-sm tracking-[0.2em] text-accent uppercase">How we work</p>
           <h2 className="font-display mt-3 max-w-2xl text-3xl md:text-4xl">One inventory. Two ways to shop.</h2>
           <p className="mt-4 max-w-3xl leading-relaxed text-ink-muted">
@@ -190,8 +192,8 @@ export default function AboutPage() {
               },
               {
                 icon: Store,
-                title: "Mumbai counter",
-                body: "Walk in for advice, weigh-ins, or to pick up what you ordered online.",
+                title: "Tricity counter",
+                body: "Walk in at our Chandigarh shop for advice, weigh-ins, or to pick up what you ordered online.",
               },
               {
                 icon: Heart,
@@ -210,7 +212,7 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-canvas">
-        <div className="mx-auto max-w-6xl px-4 py-16 lg:px-6 lg:py-24">
+        <div className="store-shell py-16 lg:py-24">
           <div className="grid gap-6 md:grid-cols-3">
             <div className="relative aspect-[3/4] overflow-hidden rounded-2xl md:col-span-1">
               <SmartImage
@@ -248,7 +250,7 @@ export default function AboutPage() {
                 </li>
               </ul>
               <p className="mt-6 leading-relaxed text-ink-muted">
-                We ship across India with clear delivery times and free shipping above ₹1,499. Need help choosing? Our{" "}
+                We deliver across {siteConfig.location.formatted} with clear delivery times and free shipping above ₹1,499. Need help choosing? Our{" "}
                 <Link href="/blog" className="text-accent hover:text-accent-hover">
                   journal
                 </Link>{" "}
@@ -270,9 +272,9 @@ export default function AboutPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-inverse/70 to-transparent" />
             <div className="absolute inset-y-0 left-0 flex max-w-md flex-col justify-center px-6 lg:px-10">
-              <p className="text-sm tracking-[0.2em] text-on-inverse/70 uppercase">Across India</p>
+              <p className="text-sm tracking-[0.2em] text-on-inverse/70 uppercase">Across the Tricity</p>
               <p className="font-display mt-2 text-2xl text-on-inverse md:text-3xl">
-                From Mumbai to your doorstep — the same care, packed carefully.
+                Chandigarh, Mohali and Panchkula — the same care, packed carefully.
               </p>
             </div>
           </div>
@@ -280,11 +282,11 @@ export default function AboutPage() {
       </section>
 
       <section className="border-t border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-16 lg:flex-row lg:items-center lg:px-6 lg:py-20">
+        <div className="store-shell flex flex-col items-start justify-between gap-6 py-16 lg:flex-row lg:items-center lg:py-20">
           <div>
             <h2 className="font-display text-3xl md:text-4xl">Come say hello.</h2>
             <p className="mt-3 max-w-xl leading-relaxed text-ink-muted">
-              Browse the catalogue online, visit us in Mumbai, or write to hello@pawlix.com with a question about food,
+              Browse the catalogue online, visit us in the Tricity, or write to hello@pawlix.com with a question about food,
               sizing, or what might suit a nervous new rescue. We are glad you are here.
             </p>
           </div>

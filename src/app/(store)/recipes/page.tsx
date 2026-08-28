@@ -10,7 +10,7 @@ export default function RecipesIndexPage() {
   const posts = publishedPosts(state, "recipe");
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12 lg:px-6 lg:py-16">
+    <main className="store-shell py-12 lg:py-16">
       <PageSeo
         title="Homemade pet recipes"
         description="Simple bowls and toppers for dogs, cats and birds. Short kitchen notes from the Pawlix team."
@@ -22,7 +22,7 @@ export default function RecipesIndexPage() {
       <p className="mt-4 max-w-xl text-ink-muted">
         Short kitchen notes for dogs, cats and birds. Edit them in the admin — the storefront updates immediately.
       </p>
-      <div className="mt-12 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-12 grid gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}

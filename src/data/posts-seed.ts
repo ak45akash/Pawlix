@@ -146,7 +146,7 @@ export const seedPosts: ContentPost[] = [
 <p>A well-fitted harness and a lead you can shorten at a crossing is enough. Retractable leads are hard on pavements full of ankles. We keep leather and webbing that you can grab quickly without a plastic handle fighting you.</p>
 <p>Check the harness once a month. Puppies outgrow holes; adults change shape after a diet. A twisted chest strap is why a dog suddenly “hates” the walk.</p>
 <h2>Heat and water</h2>
-<p>Mumbai tarmac holds heat after sunset. Touch the road with the back of your hand. If you would not stand on it barefoot, shorten the loop or wait. Carry water even for a short outing in April and May.</p>
+<p>Chandigarh summer pavement holds heat after sunset. Touch the road with the back of your hand. If you would not stand on it barefoot, shorten the loop or wait. Carry water even for a short outing in April and May.</p>
 <p>End the walk the way you started: a pause at the door, a chance to shake off, then water at home. That close is part of the walk, not an afterthought.</p>`,
   }),
   makePost({

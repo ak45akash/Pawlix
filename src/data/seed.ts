@@ -354,7 +354,7 @@ export const seedState: DemoState = {
       shipping: 0,
       tax: 389,
       total: 2549,
-      address: "22, Green Park, Chennai 600028",
+      address: "House 22, Sector 20, Panchkula 134116",
       createdAt: "2026-08-28T07:15:00.000Z",
     },
     {
@@ -388,7 +388,7 @@ export const seedState: DemoState = {
       shipping: 0,
       tax: 355,
       total: 2326,
-      address: "14, Palm Court, Bandra West, Mumbai 400050",
+      address: "14, Sector 17, Chandigarh 160017",
       createdAt: "2026-08-27T14:05:00.000Z",
     },
     {
@@ -408,7 +408,7 @@ export const seedState: DemoState = {
       shipping: 79,
       tax: 318,
       total: 2167,
-      address: "88, Lake View, Koramangala, Bengaluru 560034",
+      address: "88, Phase 7, Mohali 160062",
       createdAt: "2026-08-26T16:30:00.000Z",
     },
     {
@@ -442,7 +442,7 @@ export const seedState: DemoState = {
       shipping: 0,
       tax: 340,
       total: 2230,
-      address: "22, Green Park, Chennai 600028",
+      address: "House 22, Sector 20, Panchkula 134116",
       createdAt: "2026-08-24T10:45:00.000Z",
     },
     {
@@ -459,7 +459,7 @@ export const seedState: DemoState = {
       shipping: 0,
       tax: 392,
       total: 2572,
-      address: "14, Palm Court, Bandra West, Mumbai 400050",
+      address: "14, Sector 17, Chandigarh 160017",
       createdAt: "2026-08-26T11:20:00.000Z",
     },
     {
@@ -476,7 +476,7 @@ export const seedState: DemoState = {
       shipping: 79,
       tax: 76,
       total: 575,
-      address: "88, Lake View, Koramangala, Bengaluru 560034",
+      address: "88, Phase 7, Mohali 160062",
       createdAt: "2026-08-27T08:10:00.000Z",
     },
     {
@@ -510,7 +510,7 @@ export const seedState: DemoState = {
       shipping: 0,
       tax: 695,
       total: 4556,
-      address: "14, Palm Court, Bandra West, Mumbai 400050",
+      address: "14, Sector 17, Chandigarh 160017",
       createdAt: "2026-08-22T13:20:00.000Z",
     },
     {
@@ -544,7 +544,7 @@ export const seedState: DemoState = {
       shipping: 79,
       tax: 151,
       total: 1070,
-      address: "22, Green Park, Chennai 600028",
+      address: "House 22, Sector 20, Panchkula 134116",
       createdAt: "2026-08-16T09:30:00.000Z",
     },
     {
@@ -592,7 +592,7 @@ export const seedState: DemoState = {
   settings: {
     shippingCharge: 79,
     freeShippingThreshold: 1499,
-    deliveryNote: "Metro cities: 2–4 days. Other serviceable pincodes: 4–7 days.",
+    deliveryNote: "Tricity (Chandigarh, Mohali, Panchkula): 1–2 days. Nearby pincodes: 2–4 days.",
     gstEnabled: true,
   },
 };

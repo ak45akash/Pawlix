@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ReturnsPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16 lg:px-6">
+    <main className="store-shell py-16">
       <h1 className="text-3xl font-semibold tracking-tight">Returns & Refunds</h1>
       <p className="mt-6 leading-relaxed text-ink-muted">
         Unused, unopened items can be returned within 7 days. Food opened after delivery is not returnable unless there

@@ -100,3 +100,12 @@ body {
   border-radius: 1rem;
 }
 
+.store-shell {
+  width: 100%;
+  padding-inline: clamp(1rem, 4vw, 5rem);
+}
+
+.store-copy {
+  max-width: 42rem;
+}
+

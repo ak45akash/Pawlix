@@ -45,7 +45,7 @@ function ShopView() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 lg:px-6 lg:py-14">
+    <main className="store-shell py-10 lg:py-14">
       <PageSeo
         title={pet || category ? `${[pet?.name, category?.name].filter(Boolean).join(" ")} | Shop` : "Shop pet food, toys and accessories"}
         description={

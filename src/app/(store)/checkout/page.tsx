@@ -7,6 +7,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { findProduct, productVariants, sellingPrice } from "@/lib/catalog";
 import { formatInr } from "@/lib/format";
 import { createId } from "@/lib/slug";
+import { siteConfig } from "@/config/site";
 import { useCart } from "@/lib/cart-store";
 import { useCustomer } from "@/lib/customer-store";
 import { useDemo } from "@/lib/demo-store";
@@ -76,7 +77,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="mx-auto grid max-w-6xl gap-10 px-4 py-10 lg:grid-cols-2 lg:px-6">
+    <main className="store-shell grid gap-10 py-10 lg:grid-cols-2">
       <form className="space-y-4" onSubmit={placeOrder}>
         <h1 className="text-3xl font-semibold tracking-tight">Checkout</h1>
         <p className="text-sm text-ink-muted">Payments will connect to Razorpay later. This places a demo order.</p>
@@ -94,18 +95,23 @@ export default function CheckoutPage() {
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="City">
-            <Input name="city" required />
+            <Select name="city" defaultValue={siteConfig.location.cities[0]}>
+              {siteConfig.location.cities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </Select>
           </Field>
           <Field label="Pincode">
-            <Input name="pincode" required />
+            <Input name="pincode" required placeholder="160017" />
           </Field>
         </div>
         <Field label="State">
-          <Select name="state" defaultValue="MH">
-            <option value="MH">Maharashtra</option>
-            <option value="KA">Karnataka</option>
-            <option value="DL">Delhi</option>
-            <option value="TN">Tamil Nadu</option>
+          <Select name="state" defaultValue={siteConfig.location.stateCode}>
+            <option value="PB">Punjab</option>
+            <option value="HR">Haryana</option>
+            <option value="CH">Chandigarh</option>
           </Select>
         </Field>
         {error ? <p className="text-sm text-danger">{error}</p> : null}

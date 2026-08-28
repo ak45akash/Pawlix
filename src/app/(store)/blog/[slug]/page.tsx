@@ -18,7 +18,7 @@ export default function BlogPostPage() {
 
   if (!post || !post.published) {
     return (
-      <main className="mx-auto max-w-2xl px-4 py-16">
+      <main className="store-shell py-16">
         <h1 className="font-display text-3xl">Post not found</h1>
         <Link href="/blog" className="mt-4 inline-block text-sm text-accent">
           Back to journal
@@ -41,12 +41,13 @@ export default function BlogPostPage() {
       <div className="relative h-[42vh] min-h-72 overflow-hidden bg-inverse">
         <SmartImage src={post.coverImage} alt={post.title} fill className="object-cover opacity-80" sizes="100vw" />
         <div className="absolute inset-0 bg-gradient-to-t from-inverse/80 to-inverse/10" />
-        <div className="absolute inset-x-0 bottom-0 mx-auto max-w-3xl px-4 pb-10 lg:px-6">
+        <div className="store-shell absolute inset-x-0 bottom-0 pb-10">
           <p className="text-xs tracking-[0.2em] text-on-inverse/70 uppercase">Journal · {formatDate(post.publishedAt)}</p>
           <h1 className="font-display mt-3 text-4xl text-on-inverse md:text-5xl">{post.title}</h1>
         </div>
       </div>
-      <div className="mx-auto max-w-3xl px-4 pt-10 lg:px-6">
+      <div className="store-shell pt-10">
+        <div className="max-w-5xl">
         <p className="text-lg leading-relaxed text-ink-muted">{post.excerpt}</p>
         <p className="mt-3 text-sm text-ink-muted">{post.readingMinutes} min read</p>
         <HtmlContent html={post.body} className="mt-10" />
@@ -63,6 +64,7 @@ export default function BlogPostPage() {
             })}
           </div>
         ) : null}
+        </div>
       </div>
     </article>
   );

@@ -10,7 +10,8 @@ export default function RegisterPage() {
   const router = useRouter();
 
   return (
-    <main className="mx-auto max-w-md px-4 py-16">
+    <main className="store-shell py-16">
+      <div className="max-w-md">
       <h1 className="text-3xl font-semibold tracking-tight">Create account</h1>
       <form
         className="mt-6 space-y-4"
@@ -31,6 +32,7 @@ export default function RegisterPage() {
           Create account
         </Button>
       </form>
+      </div>
     </main>
   );
 }

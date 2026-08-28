@@ -48,7 +48,7 @@ export default function ProductPage() {
   const images = product.images.length ? product.images : [product.image];
 
   return (
-    <main className="mx-auto grid max-w-6xl gap-10 px-4 py-10 lg:grid-cols-2 lg:px-6">
+    <main className="store-shell grid gap-10 py-10 lg:grid-cols-2">
       <PageSeo
         title={product.seoTitle || product.name}
         description={product.seoDescription || product.shortDescription}

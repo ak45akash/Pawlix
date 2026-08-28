@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 function LegalPage({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16 lg:px-6">
+    <main className="store-shell py-16">
       <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
       <div className="mt-6 space-y-4 leading-relaxed text-ink-muted">{children}</div>
     </main>

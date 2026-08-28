@@ -12,7 +12,8 @@ function Success() {
   const order = state.orders.find((item) => item.id === id);
 
   return (
-    <main className="mx-auto max-w-xl px-4 py-24 text-center">
+    <main className="store-shell py-24">
+      <div className="mx-auto max-w-xl text-center">
       <p className="text-sm tracking-[0.2em] text-accent uppercase">Thank you</p>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight">Order received</h1>
       <p className="mt-3 text-ink-muted">
@@ -27,6 +28,7 @@ function Success() {
         <Link href="/shop">
           <Button variant="secondary">Continue shopping</Button>
         </Link>
+      </div>
       </div>
     </main>
   );
