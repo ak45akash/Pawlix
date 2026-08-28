@@ -49,6 +49,7 @@ export function emptyPost(kind: ContentKind): Omit<ContentPost, "id"> {
     cookMinutes: kind === "recipe" ? 0 : null,
     seoTitle: "",
     seoDescription: "",
+    focusKeyword: "",
     publishedAt: now,
     updatedAt: now,
     archived: false,

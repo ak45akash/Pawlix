@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "How Pawlix collects and uses account, order and delivery details. We do not sell personal data.",
+  alternates: { canonical: "/privacy" },
+};
+
 function LegalPage({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-16 lg:px-6">

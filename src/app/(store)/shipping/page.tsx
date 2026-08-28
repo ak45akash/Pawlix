@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Shipping Policy",
+  description: "Pawlix shipping charges, free-shipping threshold, and delivery times across India.",
+  alternates: { canonical: "/shipping" },
+};
+
 export default function ShippingPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-16 lg:px-6">

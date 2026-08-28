@@ -2,9 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/field";
+import { RequireCapability } from "@/components/admin/guard";
 import { useDemo } from "@/lib/demo-store";
 
 export default function SettingsPage() {
+  return (
+    <RequireCapability capability="settings.edit">
+      <SettingsForm />
+    </RequireCapability>
+  );
+}
+
+function SettingsForm() {
   const { state, saveSettings, reset } = useDemo();
   return (
     <div className="max-w-xl">

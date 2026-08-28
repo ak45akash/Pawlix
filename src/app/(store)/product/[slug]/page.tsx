@@ -19,6 +19,9 @@ import { formatInr } from "@/lib/format";
 import { useCart } from "@/lib/cart-store";
 import { useDemo } from "@/lib/demo-store";
 import { SmartImage } from "@/components/ui/smart-image";
+import { PageSeo } from "@/components/store/page-seo";
+import { productJsonLd } from "@/lib/seo";
+import { getSiteUrl } from "@/config/env";
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -46,6 +49,15 @@ export default function ProductPage() {
 
   return (
     <main className="mx-auto grid max-w-6xl gap-10 px-4 py-10 lg:grid-cols-2 lg:px-6">
+      <PageSeo
+        title={product.seoTitle || product.name}
+        description={product.seoDescription || product.shortDescription}
+        path={`/product/${product.slug}`}
+        image={product.image}
+        type="product"
+        keywords={product.focusKeyword ? [product.focusKeyword, pet?.name ?? "", category?.name ?? ""].filter(Boolean) : []}
+        jsonLd={productJsonLd(product, getSiteUrl())}
+      />
       <div>
         <div className="relative aspect-square overflow-hidden rounded-lg bg-canvas">
           <SmartImage src={images[image]} alt={product.name} fill className="object-cover" sizes="50vw" />

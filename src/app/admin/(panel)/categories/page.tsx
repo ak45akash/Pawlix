@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, Input } from "@/components/ui/field";
-import { canDeleteCatalogue } from "@/lib/permissions/catalogue.ts";
 import { slugify } from "@/lib/slug";
 import { useDemo } from "@/lib/demo-store";
 import type { Category } from "@/types/catalog";
@@ -12,8 +11,8 @@ import type { Category } from "@/types/catalog";
 type Draft = Partial<Category>;
 
 export default function CategoriesPage() {
-  const { state, saveCategory, deleteEntity, role } = useDemo();
-  const canDelete = canDeleteCatalogue(role);
+  const { state, saveCategory, deleteEntity, can } = useDemo();
+  const canDelete = can("catalogue.delete");
   const [editing, setEditing] = useState<Draft | null>(null);
   const [error, setError] = useState("");
   const rows = state.categories.filter((item) => !item.archived).sort((a, b) => a.sortOrder - b.sortOrder);

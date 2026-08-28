@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "test": "node --experimental-strip-types --test src/features/products/sku.test.ts src/lib/permissions/catalogue.test.ts"
+    "test": "node --experimental-strip-types --test src/features/products/sku.test.ts src/lib/permissions/catalogue.test.ts src/lib/seo.test.ts"
   },
   "dependencies": {
     "lucide-react": "^1.34.0",

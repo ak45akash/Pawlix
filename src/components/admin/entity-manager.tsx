@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
-import { canDeleteCatalogue } from "@/lib/permissions/catalogue.ts";
 import { slugify } from "@/lib/slug";
 import { useDemo } from "@/lib/demo-store";
 
@@ -22,8 +21,8 @@ export function EntityManager<T extends Entity>({
   onSave: (item: Omit<T, "id" | "archived"> & { id?: string }) => void;
   onDelete: (id: string) => void;
 }) {
-  const { role } = useDemo();
-  const canDelete = canDeleteCatalogue(role);
+  const { can } = useDemo();
+  const canDelete = can("catalogue.delete");
   const [editing, setEditing] = useState<Partial<T> | null>(null);
   const [error, setError] = useState("");
 

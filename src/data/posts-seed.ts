@@ -26,6 +26,7 @@ function makePost(input: {
   servings?: string;
   prepMinutes?: number | null;
   cookMinutes?: number | null;
+  focusKeyword?: string;
 }): ContentPost {
   const published = input.published ?? true;
   return {
@@ -45,6 +46,7 @@ function makePost(input: {
     cookMinutes: input.cookMinutes ?? null,
     seoTitle: `${input.title} | Pawlix`,
     seoDescription: input.excerpt,
+    focusKeyword: input.focusKeyword ?? input.slug.replace(/-/g, " "),
     publishedAt: input.publishedAt,
     updatedAt: input.publishedAt,
     archived: false,

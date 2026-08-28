@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Pawlix",
+  description: "Pawlix is a pet retail store for food, toys and accessories. Short catalogue, shared inventory, honest photography.",
+  alternates: { canonical: "/about" },
+};
+
 export default function AboutPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-16 lg:px-6 lg:py-24">

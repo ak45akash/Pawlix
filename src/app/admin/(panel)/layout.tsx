@@ -1,19 +1,33 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AdminShell } from "@/components/admin/shell";
+import { RequireCapability } from "@/components/admin/guard";
+import { capabilityForPath, resolveMemberIdFromCookie } from "@/lib/permissions/access.ts";
+import { useDemo } from "@/lib/demo-store";
 
-function hasAdminCookie() {
-  return document.cookie.split("; ").some((part) => part.startsWith("pawlix_admin="));
+function adminCookie() {
+  return document.cookie.split("; ").find((part) => part.startsWith("pawlix_admin="))?.slice("pawlix_admin=".length);
 }
 
 export default function AdminPanelLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const { state, setCurrentMember, can } = useDemo();
+  const required = capabilityForPath(pathname);
 
   useEffect(() => {
-    if (!hasAdminCookie()) router.replace("/admin/login");
-  }, [router]);
+    const cookie = adminCookie();
+    if (!cookie) {
+      router.replace("/admin/login");
+      return;
+    }
+    const memberId = resolveMemberIdFromCookie(cookie, state);
+    if (memberId && memberId !== state.currentMemberId) setCurrentMember(memberId);
+  }, [router, setCurrentMember, state.currentMemberId, state.members]);
 
-  return <AdminShell>{children}</AdminShell>;
+  const body = required && !can(required) ? <RequireCapability capability={required}>{null}</RequireCapability> : children;
+
+  return <AdminShell>{body}</AdminShell>;
 }

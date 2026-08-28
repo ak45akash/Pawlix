@@ -6,6 +6,9 @@ import { HtmlContent } from "@/components/store/html-content";
 import { SmartImage } from "@/components/ui/smart-image";
 import { findPost, shopHref } from "@/lib/content";
 import { formatDate } from "@/lib/format";
+import { articleJsonLd } from "@/lib/seo";
+import { getSiteUrl } from "@/config/env";
+import { PageSeo } from "@/components/store/page-seo";
 import { useDemo } from "@/lib/demo-store";
 
 export default function RecipePostPage() {
@@ -26,6 +29,15 @@ export default function RecipePostPage() {
 
   return (
     <article className="mx-auto max-w-6xl px-4 py-12 lg:px-6">
+      <PageSeo
+        title={post.seoTitle || post.title}
+        description={post.seoDescription || post.excerpt}
+        path={`/recipes/${post.slug}`}
+        image={post.coverImage}
+        type="article"
+        keywords={post.focusKeyword ? [post.focusKeyword] : []}
+        jsonLd={articleJsonLd(post, getSiteUrl())}
+      />
       <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
         <div>
           <p className="text-xs tracking-[0.2em] text-accent uppercase">Recipe · {formatDate(post.publishedAt)}</p>

@@ -7,6 +7,7 @@ import { FilterChip } from "@/components/store/filter-chip";
 import { Select } from "@/components/ui/field";
 import { storefrontProducts } from "@/lib/catalog";
 import { useDemo } from "@/lib/demo-store";
+import { PageSeo } from "@/components/store/page-seo";
 
 function ShopView() {
   const searchParams = useSearchParams();
@@ -45,6 +46,16 @@ function ShopView() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 lg:px-6 lg:py-14">
+      <PageSeo
+        title={pet || category ? `${[pet?.name, category?.name].filter(Boolean).join(" ")} | Shop` : "Shop pet food, toys and accessories"}
+        description={
+          pet || category
+            ? `Shop ${[pet?.name, category?.name].filter(Boolean).join(" ").toLowerCase()} at Pawlix.`
+            : "One catalogue for dogs, cats and birds — food, toys and accessories with live stock."
+        }
+        path="/shop"
+        keywords={[pet?.name, category?.name, "pet shop", "dog food", "cat food"].filter((item): item is string => Boolean(item))}
+      />
       <p className="text-sm tracking-[0.2em] text-accent uppercase">Catalogue</p>
       <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <div>

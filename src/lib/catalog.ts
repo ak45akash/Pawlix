@@ -1,4 +1,5 @@
-import type { Category, DemoState, Product, ProductVariant } from "@/types/catalog";
+import type { Category, ContentPost, DemoState, Product, ProductVariant } from "@/types/catalog";
+import { defaultSiteSeo, seedMembers, seedRoles } from "@/data/roles-seed";
 
 export function activeProducts(state: DemoState) {
   return state.products
@@ -56,9 +57,34 @@ export function categoryById(state: DemoState, id: string) {
 }
 
 export function normalizeDemoState(state: DemoState): DemoState {
+  const roles = Array.isArray(state.roles) && state.roles.length ? state.roles : seedRoles;
+  const members = Array.isArray(state.members) && state.members.length ? state.members : seedMembers;
+  const currentMemberId =
+    state.currentMemberId && members.some((member) => member.id === state.currentMemberId)
+      ? state.currentMemberId
+      : members[0]?.id ?? "mem_admin";
+  const roleSlug = roles.find((role) => role.id === members.find((member) => member.id === currentMemberId)?.roleId)?.slug ?? "admin";
+
   return {
     ...state,
-    posts: Array.isArray(state.posts) ? state.posts : [],
+    roles,
+    members,
+    currentMemberId,
+    adminRole: roleSlug,
+    seo: {
+      ...defaultSiteSeo(),
+      ...(state.seo ?? {}),
+      keywords: state.seo?.keywords?.length ? state.seo.keywords : defaultSiteSeo().keywords,
+      focusKeywords: state.seo?.focusKeywords?.length ? state.seo.focusKeywords : defaultSiteSeo().focusKeywords,
+    },
+    posts: (Array.isArray(state.posts) ? state.posts : []).map((post: ContentPost) => ({
+      ...post,
+      focusKeyword: post.focusKeyword ?? "",
+    })),
+    products: state.products.map((product: Product) => ({
+      ...product,
+      focusKeyword: product.focusKeyword ?? "",
+    })),
     categories: state.categories.map((item) => {
       const legacy = item as Category & { petTypeId?: string };
       if (Array.isArray(legacy.petTypeIds)) return item;

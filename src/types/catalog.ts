@@ -1,5 +1,4 @@
 import type { SkuSource } from "@/features/products/sku.ts";
-import type { AdminRole } from "@/lib/permissions/catalogue.ts";
 
 export type PetType = {
   id: string;
@@ -60,6 +59,7 @@ export type Product = {
   sortOrder: number;
   seoTitle: string;
   seoDescription: string;
+  focusKeyword: string;
   archived: boolean;
   createdAt: string;
   updatedAt: string;
@@ -200,9 +200,38 @@ export type ContentPost = {
   cookMinutes: number | null;
   seoTitle: string;
   seoDescription: string;
+  focusKeyword: string;
   publishedAt: string;
   updatedAt: string;
   archived: boolean;
+};
+
+export type AdminRoleRecord = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  capabilities: string[];
+  system: boolean;
+};
+
+export type AdminMember = {
+  id: string;
+  name: string;
+  email: string;
+  roleId: string;
+  status: "active" | "disabled";
+  createdAt: string;
+};
+
+export type SiteSeo = {
+  title: string;
+  description: string;
+  keywords: string[];
+  ogImage: string;
+  locale: string;
+  twitterHandle: string;
+  focusKeywords: string[];
 };
 
 export type AuditLog = {
@@ -238,7 +267,11 @@ export type DemoState = {
   homepageSections: HomepageSection[];
   auditLogs: AuditLog[];
   settings: SiteSettings;
-  adminRole: AdminRole;
+  seo: SiteSeo;
+  roles: AdminRoleRecord[];
+  members: AdminMember[];
+  currentMemberId: string;
+  adminRole: string;
 };
 
 export type CartItem = {

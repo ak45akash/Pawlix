@@ -4,13 +4,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/format";
-import { canDeleteCatalogue } from "@/lib/permissions/catalogue.ts";
+import { analyzePost } from "@/lib/seo";
+import { scoreTone } from "@/components/admin/seo-meter";
 import { useDemo } from "@/lib/demo-store";
 import type { ContentKind } from "@/types/catalog";
 
 export function PostList({ kind }: { kind: ContentKind }) {
-  const { state, deleteEntity, role } = useDemo();
-  const canDelete = canDeleteCatalogue(role);
+  const { state, deleteEntity, can } = useDemo();
+  const canDelete = can("content.delete");
   const rows = state.posts
     .filter((post) => post.kind === kind && !post.archived)
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
@@ -36,12 +37,15 @@ export function PostList({ kind }: { kind: ContentKind }) {
             <tr>
               <th className="px-4 py-3 font-medium">Title</th>
               <th className="px-4 py-3 font-medium">Status</th>
+              <th className="px-4 py-3 font-medium">SEO</th>
               <th className="px-4 py-3 font-medium">Date</th>
               <th className="px-4 py-3 font-medium"></th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {rows.map((row) => {
+              const seoScore = analyzePost(row).score;
+              return (
               <tr key={row.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3">
                   <Link href={`${base}/${row.id}`} className="font-medium">
@@ -51,6 +55,9 @@ export function PostList({ kind }: { kind: ContentKind }) {
                 </td>
                 <td className="px-4 py-3">
                   <Badge tone={row.published ? "success" : "neutral"}>{row.published ? "Published" : "Draft"}</Badge>
+                </td>
+                <td className="px-4 py-3">
+                  <Badge tone={scoreTone(seoScore)}>{seoScore}</Badge>
                 </td>
                 <td className="px-4 py-3">{formatDate(row.publishedAt)}</td>
                 <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -69,7 +76,8 @@ export function PostList({ kind }: { kind: ContentKind }) {
                   ) : null}
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

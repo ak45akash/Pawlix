@@ -3,12 +3,18 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/field";
+import { PageSeo } from "@/components/store/page-seo";
 
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
 
   return (
     <main className="mx-auto max-w-xl px-4 py-16 lg:px-6">
+      <PageSeo
+        title="Contact Pawlix"
+        description="Write to the Pawlix shop in Mumbai about orders, food, or what we stock."
+        path="/contact"
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Contact</h1>
       <p className="mt-2 text-sm text-ink-muted">hello@pawlix.com · Mumbai</p>
       {sent ? (

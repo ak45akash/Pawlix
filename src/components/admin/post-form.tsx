@@ -1,19 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { ImageField } from "@/components/admin/image-field";
 import { RichEditor } from "@/components/admin/rich-editor";
+import { SeoChecks, SeoMeter, SerpPreview } from "@/components/admin/seo-meter";
 import { emptyPost, postPath } from "@/lib/content";
 import { estimateReadingMinutes, sanitizeHtml } from "@/lib/html";
+import { analyzePost } from "@/lib/seo";
 import { createId, slugify } from "@/lib/slug";
 import { useDemo } from "@/lib/demo-store";
 import type { ContentKind, ContentPost } from "@/types/catalog";
 
 export function PostForm({ kind, postId }: { kind: ContentKind; postId?: string }) {
-  const { state, savePost } = useDemo();
+  const { state, savePost, can } = useDemo();
   const router = useRouter();
   const existing = postId ? state.posts.find((post) => post.id === postId && post.kind === kind) : undefined;
   const [draft, setDraft] = useState<ContentPost>(() =>
@@ -22,6 +24,10 @@ export function PostForm({ kind, postId }: { kind: ContentKind; postId?: string 
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const listHref = kind === "recipe" ? "/admin/recipes" : "/admin/blog";
+  const canPublish = can("content.publish");
+  const report = useMemo(() => analyzePost(draft), [draft]);
+  const seoTitle = draft.seoTitle || `${draft.title} | Pawlix`;
+  const seoDescription = draft.seoDescription || draft.excerpt;
 
   function togglePet(id: string) {
     setDraft((current) => ({
@@ -47,6 +53,8 @@ export function PostForm({ kind, postId }: { kind: ContentKind; postId?: string 
       slug: draft.slug || slugify(draft.title),
       body,
       excerpt: draft.excerpt || body.replace(/<[^>]+>/g, " ").trim().slice(0, 160),
+      seoTitle: draft.seoTitle || `${draft.title} | Pawlix`,
+      seoDescription: draft.seoDescription || draft.excerpt || body.replace(/<[^>]+>/g, " ").trim().slice(0, 160),
       readingMinutes: estimateReadingMinutes(body),
       updatedAt: new Date().toISOString(),
       publishedAt: published
@@ -84,9 +92,13 @@ export function PostForm({ kind, postId }: { kind: ContentKind; postId?: string 
           <Button variant="secondary" size="sm" onClick={() => persist(false)}>
             Save draft
           </Button>
-          <Button size="sm" onClick={() => persist(true)}>
-            {draft.published ? "Update" : "Publish"}
-          </Button>
+          {canPublish ? (
+            <Button size="sm" onClick={() => persist(true)}>
+              {draft.published ? "Update" : "Publish"}
+            </Button>
+          ) : (
+            <span className="text-xs text-ink-muted">Your role cannot publish</span>
+          )}
         </div>
       </header>
 
@@ -164,6 +176,43 @@ export function PostForm({ kind, postId }: { kind: ContentKind; postId?: string 
             />
             Featured on homepage
           </label>
+          <div className="border-t border-border pt-5">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-medium">SEO</p>
+              <SeoMeter score={report.score} size="sm" />
+            </div>
+            <Field label="Focus keyword">
+              <Input
+                value={draft.focusKeyword}
+                onChange={(event) => setDraft({ ...draft, focusKeyword: event.target.value })}
+                list="post-focus-keywords"
+              />
+            </Field>
+            <datalist id="post-focus-keywords">
+              {state.seo.focusKeywords.map((keyword) => (
+                <option key={keyword} value={keyword} />
+              ))}
+            </datalist>
+            <Field label="SEO title" hint={`${seoTitle.length}/60`}>
+              <Input value={draft.seoTitle} placeholder={`${draft.title} | Pawlix`} onChange={(event) => setDraft({ ...draft, seoTitle: event.target.value })} />
+            </Field>
+            <Field label="Meta description" hint={`${seoDescription.length}/160`}>
+              <Textarea value={draft.seoDescription} placeholder={draft.excerpt} onChange={(event) => setDraft({ ...draft, seoDescription: event.target.value })} />
+            </Field>
+            <div className="mt-3">
+              <SerpPreview
+                title={seoTitle}
+                url={`pawlix.com/${kind === "recipe" ? "recipes" : "blog"}/${draft.slug || "slug"}`}
+                description={seoDescription}
+              />
+            </div>
+            <div className="mt-4 max-h-64 overflow-y-auto">
+              <SeoChecks checks={report.checks.filter((check) => check.status !== "pass").slice(0, 6)} />
+            </div>
+            <a href="/admin/seo" className="mt-3 inline-block text-xs text-accent">
+              Open SEO tools
+            </a>
+          </div>
         </aside>
       </div>
     </div>

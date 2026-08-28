@@ -23,11 +23,28 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: siteConfig.name,
+    default: `${siteConfig.name} — pet food, toys and accessories`,
     template: `%s · ${siteConfig.name}`,
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
+  keywords: ["pet food", "dog food", "cat food", "bird food", "pet toys", "pet accessories", "Pawlix"],
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: getSiteUrl(),
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} — pet food, toys and accessories`,
+    description: siteConfig.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} — pet food, toys and accessories`,
+    description: siteConfig.description,
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

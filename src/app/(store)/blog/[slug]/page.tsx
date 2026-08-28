@@ -6,6 +6,9 @@ import { HtmlContent } from "@/components/store/html-content";
 import { SmartImage } from "@/components/ui/smart-image";
 import { findPost, shopHref } from "@/lib/content";
 import { formatDate } from "@/lib/format";
+import { articleJsonLd } from "@/lib/seo";
+import { getSiteUrl } from "@/config/env";
+import { PageSeo } from "@/components/store/page-seo";
 import { useDemo } from "@/lib/demo-store";
 
 export default function BlogPostPage() {
@@ -26,8 +29,17 @@ export default function BlogPostPage() {
 
   return (
     <article className="pb-20">
+      <PageSeo
+        title={post.seoTitle || post.title}
+        description={post.seoDescription || post.excerpt}
+        path={`/blog/${post.slug}`}
+        image={post.coverImage}
+        type="article"
+        keywords={post.focusKeyword ? [post.focusKeyword] : []}
+        jsonLd={articleJsonLd(post, getSiteUrl())}
+      />
       <div className="relative h-[42vh] min-h-72 overflow-hidden bg-inverse">
-        <SmartImage src={post.coverImage} alt="" fill className="object-cover opacity-80" sizes="100vw" />
+        <SmartImage src={post.coverImage} alt={post.title} fill className="object-cover opacity-80" sizes="100vw" />
         <div className="absolute inset-0 bg-gradient-to-t from-inverse/80 to-inverse/10" />
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-3xl px-4 pb-10 lg:px-6">
           <p className="text-xs tracking-[0.2em] text-on-inverse/70 uppercase">Journal · {formatDate(post.publishedAt)}</p>

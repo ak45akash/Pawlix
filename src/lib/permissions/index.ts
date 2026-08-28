@@ -1,12 +1,28 @@
 export {
   ADMIN_ROLES,
+  ALL_CAPABILITIES,
   CATALOGUE_CAPABILITIES,
+  CAPABILITY_GROUPS,
   ROLE_CAPABILITIES,
   assertCapability,
   canDeleteCatalogue,
   canEditCatalogue,
   canEditSku,
   hasCapability,
+  isCapability,
+  navVisible,
   type AdminRole,
+  type Capability,
   type CatalogueCapability,
 } from "./catalogue.ts";
+export {
+  capabilitiesOf,
+  memberById,
+  memberCan,
+  memberRole,
+  membersWithCapability,
+  resolveMemberIdFromCookie,
+  roleById,
+  ADMIN_ROUTE_CAPS,
+  capabilityForPath,
+} from "./access.ts";

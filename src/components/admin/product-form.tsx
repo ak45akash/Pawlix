@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
+import { SeoMeter, SerpPreview } from "@/components/admin/seo-meter";
 import { allSkus, categoriesForPet, productVariants, subcategoriesForCategory } from "@/lib/catalog";
 import { resolveSku, SkuError } from "@/features/products/sku.ts";
 import { createId, slugify } from "@/lib/slug";
+import { analyzeContent } from "@/lib/seo";
 import { useDemo } from "@/lib/demo-store";
 import type { Product, ProductVariant } from "@/types/catalog";
 
@@ -34,6 +36,9 @@ export function ProductForm({ productId }: { productId?: string }) {
   const [published, setPublished] = useState(existing?.published ?? true);
   const [featured, setFeatured] = useState(existing?.featured ?? false);
   const [sortOrder, setSortOrder] = useState(existing?.sortOrder ?? state.products.length + 1);
+  const [seoTitle, setSeoTitle] = useState(existing?.seoTitle ?? "");
+  const [seoDescription, setSeoDescription] = useState(existing?.seoDescription ?? "");
+  const [focusKeyword, setFocusKeyword] = useState(existing?.focusKeyword ?? "");
   const [variants, setVariants] = useState<ProductVariant[]>(existing ? productVariants(state, existing.id) : []);
 
   const categories = categoriesForPet(state, petTypeId);
@@ -93,8 +98,9 @@ export function ProductForm({ productId }: { productId?: string }) {
         published,
         featured,
         sortOrder: Number(sortOrder),
-        seoTitle: name,
-        seoDescription: shortDescription,
+        seoTitle: seoTitle.trim() || name,
+        seoDescription: seoDescription.trim() || shortDescription,
+        focusKeyword: focusKeyword.trim(),
         archived: false,
         createdAt: existing?.createdAt ?? new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -239,6 +245,37 @@ export function ProductForm({ productId }: { productId?: string }) {
         <input type="checkbox" checked={featured} onChange={(event) => setFeatured(event.target.checked)} />
         Featured
       </label>
+      <div className="rounded-lg border border-border p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-medium">SEO</h2>
+          <SeoMeter
+            size="sm"
+            score={analyzeContent({
+              kind: "product",
+              title: name,
+              slug,
+              body: `${shortDescription}\n${description}`,
+              excerpt: shortDescription,
+              seoTitle: seoTitle || name,
+              seoDescription: seoDescription || shortDescription,
+              focusKeyword: focusKeyword || name,
+              coverImage: image,
+            }).score}
+          />
+        </div>
+        <div className="space-y-3">
+          <Field label="Focus keyword">
+            <Input value={focusKeyword} onChange={(event) => setFocusKeyword(event.target.value)} />
+          </Field>
+          <Field label="SEO title" hint={`${(seoTitle || name).length}/60`}>
+            <Input value={seoTitle} placeholder={name} onChange={(event) => setSeoTitle(event.target.value)} />
+          </Field>
+          <Field label="Meta description" hint={`${(seoDescription || shortDescription).length}/160`}>
+            <Textarea value={seoDescription} placeholder={shortDescription} onChange={(event) => setSeoDescription(event.target.value)} />
+          </Field>
+          <SerpPreview title={seoTitle || name} url={`pawlix.com/product/${slug || "slug"}`} description={seoDescription || shortDescription} />
+        </div>
+      </div>
       <div>
         <div className="mb-2 flex items-center justify-between">
           <h2 className="font-medium">Variants</h2>

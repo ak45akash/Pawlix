@@ -1,6 +1,7 @@
 "use client";
 
 import { PostCard } from "@/components/store/post-card";
+import { PageSeo } from "@/components/store/page-seo";
 import { publishedPosts } from "@/lib/content";
 import { useDemo } from "@/lib/demo-store";
 
@@ -10,6 +11,12 @@ export default function BlogIndexPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-12 lg:px-6 lg:py-16">
+      <PageSeo
+        title="Pet care journal"
+        description="Notes from the Pawlix shop floor: how we choose food, toys and everyday habits for dogs, cats and birds."
+        path="/blog"
+        keywords={["pet blog", "dog food advice", "cat care", "Pawlix journal"]}
+      />
       <p className="text-sm tracking-[0.2em] text-accent uppercase">Journal</p>
       <h1 className="font-display mt-3 max-w-2xl text-4xl leading-tight md:text-5xl">Notes from the shop floor.</h1>
       <p className="mt-4 max-w-xl text-ink-muted">

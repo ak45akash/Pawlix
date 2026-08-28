@@ -4,20 +4,22 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, Input, Select } from "@/components/ui/field";
-import { canDeleteCatalogue } from "@/lib/permissions/catalogue.ts";
 import { useDemo } from "@/lib/demo-store";
 
 export default function CouponsPage() {
-  const { state, saveCoupon, deleteEntity, role } = useDemo();
+  const { state, saveCoupon, deleteEntity, can } = useDemo();
   const [open, setOpen] = useState(false);
+  const canManage = can("coupons.manage");
 
   return (
     <div>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">Coupons</h1>
-        <Button size="sm" onClick={() => setOpen(true)}>
-          Add
-        </Button>
+        {canManage ? (
+          <Button size="sm" onClick={() => setOpen(true)}>
+            Add
+          </Button>
+        ) : null}
       </div>
       <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="w-full text-left text-sm">
@@ -44,7 +46,7 @@ export default function CouponsPage() {
                   <Badge tone={coupon.active ? "success" : "neutral"}>{coupon.active ? "Active" : "Off"}</Badge>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  {canDeleteCatalogue(role) ? (
+                  {canManage ? (
                     <button className="text-danger" onClick={() => deleteEntity("coupons", coupon.id)}>
                       Delete
                     </button>

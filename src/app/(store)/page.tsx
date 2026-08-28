@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { SmartImage } from "@/components/ui/smart-image";
 import { featuredPosts, shopHref } from "@/lib/content";
 import { storefrontProducts } from "@/lib/catalog";
+import { articleJsonLd, siteJsonLd } from "@/lib/seo";
+import { getSiteUrl } from "@/config/env";
+import { PageSeo } from "@/components/store/page-seo";
 import { useDemo } from "@/lib/demo-store";
 
 const petImages: Record<string, string> = {
@@ -26,6 +29,14 @@ export default function HomePage() {
 
   return (
     <>
+      <PageSeo
+        title={state.seo.title}
+        description={state.seo.description}
+        path="/"
+        image={state.seo.ogImage}
+        keywords={state.seo.keywords}
+        jsonLd={[...siteJsonLd(state.seo, getSiteUrl()), ...journals.map((post) => articleJsonLd(post, getSiteUrl()))]}
+      />
       <section className="relative min-h-[78vh] overflow-hidden bg-inverse text-on-inverse">
         <SmartImage
           src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=2000&q=80"

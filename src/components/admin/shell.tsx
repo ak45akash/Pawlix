@@ -12,45 +12,52 @@ import {
   LogOut,
   Menu,
   Package,
+  Search,
   Settings,
+  Shield,
   ShoppingCart,
   Tag,
   Users,
+  UserCog,
   UtensilsCrossed,
   Warehouse,
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
-import { canDeleteCatalogue } from "@/lib/permissions/catalogue.ts";
+import type { Capability } from "@/lib/permissions/catalogue.ts";
 import { useDemo } from "@/lib/demo-store";
 import { ThemeToggle } from "@/lib/theme";
 import { cn } from "@/lib/utils/cn";
 
-const nav = [
+const nav: { href: string; label: string; icon: typeof LayoutDashboard; cap?: Capability }[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/products", label: "Products", icon: Package },
-  { href: "/admin/pet-types", label: "Pet types", icon: FolderTree },
-  { href: "/admin/categories", label: "Categories", icon: FolderTree },
-  { href: "/admin/subcategories", label: "Subcategories", icon: FolderTree },
-  { href: "/admin/brands", label: "Brands", icon: Tag },
-  { href: "/admin/inventory", label: "Inventory", icon: Warehouse },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
-  { href: "/admin/customers", label: "Customers", icon: Users },
-  { href: "/admin/coupons", label: "Coupons", icon: Tag },
-  { href: "/admin/content", label: "Homepage", icon: ClipboardList },
-  { href: "/admin/blog", label: "Blog", icon: BookOpen },
-  { href: "/admin/recipes", label: "Recipes", icon: UtensilsCrossed },
-  { href: "/admin/reviews", label: "Reviews", icon: ClipboardList },
-  { href: "/admin/reports", label: "Reports", icon: BarChart3 },
-  { href: "/admin/audit", label: "Audit log", icon: ClipboardList },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/products", label: "Products", icon: Package, cap: "catalogue.edit" },
+  { href: "/admin/pet-types", label: "Pet types", icon: FolderTree, cap: "catalogue.edit" },
+  { href: "/admin/categories", label: "Categories", icon: FolderTree, cap: "catalogue.edit" },
+  { href: "/admin/subcategories", label: "Subcategories", icon: FolderTree, cap: "catalogue.edit" },
+  { href: "/admin/brands", label: "Brands", icon: Tag, cap: "catalogue.edit" },
+  { href: "/admin/inventory", label: "Inventory", icon: Warehouse, cap: "inventory.adjust" },
+  { href: "/admin/orders", label: "Orders", icon: ShoppingCart, cap: "orders.view" },
+  { href: "/admin/customers", label: "Customers", icon: Users, cap: "customers.view" },
+  { href: "/admin/coupons", label: "Coupons", icon: Tag, cap: "coupons.manage" },
+  { href: "/admin/content", label: "Homepage", icon: ClipboardList, cap: "content.edit" },
+  { href: "/admin/blog", label: "Blog", icon: BookOpen, cap: "content.edit" },
+  { href: "/admin/recipes", label: "Recipes", icon: UtensilsCrossed, cap: "content.edit" },
+  { href: "/admin/reviews", label: "Reviews", icon: ClipboardList, cap: "content.edit" },
+  { href: "/admin/seo", label: "SEO", icon: Search, cap: "seo.view" },
+  { href: "/admin/team", label: "Team", icon: UserCog, cap: "team.view" },
+  { href: "/admin/roles", label: "Roles", icon: Shield, cap: "roles.manage" },
+  { href: "/admin/reports", label: "Reports", icon: BarChart3, cap: "reports.view" },
+  { href: "/admin/audit", label: "Audit log", icon: ClipboardList, cap: "audit.view" },
+  { href: "/admin/settings", label: "Settings", icon: Settings, cap: "settings.edit" },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { role } = useDemo();
+  const { can, member, role } = useDemo();
   const [open, setOpen] = useState(false);
   const isPostEditor = /^\/admin\/(blog|recipes)\/.+$/.test(pathname);
+  const items = nav.filter((item) => !item.cap || can(item.cap));
 
   function logout() {
     document.cookie = "pawlix_admin=; Path=/; Max-Age=0";
@@ -61,10 +68,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="flex h-full flex-col bg-inverse text-on-inverse">
       <div className="border-b border-on-inverse/10 px-5 py-4">
         <p className="text-sm font-semibold tracking-tight">{siteConfig.name} Admin</p>
-        <p className="mt-1 text-xs text-on-inverse/50">{role} · {canDeleteCatalogue(role) ? "edit & delete" : "edit only"}</p>
+        <p className="mt-1 text-xs text-on-inverse/50">
+          {member?.name ?? "Member"} · {role}
+        </p>
       </div>
       <nav className="flex-1 overflow-y-auto py-3 text-sm">
-        {nav.map((item) => {
+        {items.map((item) => {
           const active = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
           return (
             <Link

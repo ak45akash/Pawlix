@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms",
+  description: "Terms for ordering on pawlix.com, including prices, stock and delivery.",
+  alternates: { canonical: "/terms" },
+};
+
 export default function TermsPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-16 lg:px-6">

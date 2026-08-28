@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Returns & Refunds",
+  description: "7-day returns on unused Pawlix items. How refunds are issued after inspection.",
+  alternates: { canonical: "/returns" },
+};
+
 export default function ReturnsPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-16 lg:px-6">

@@ -8,14 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/field";
 import { availableStock, categoryById, petTypeById, stockStatus } from "@/lib/catalog";
 import { formatInr } from "@/lib/format";
-import { canDeleteCatalogue } from "@/lib/permissions/catalogue.ts";
 import { useDemo } from "@/lib/demo-store";
 
 export default function AdminProductsPage() {
-  const { state, deleteEntity, duplicateProduct, role } = useDemo();
+  const { state, deleteEntity, duplicateProduct, can } = useDemo();
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const canDelete = canDeleteCatalogue(role);
+  const canDelete = can("catalogue.delete");
 
   const products = useMemo(
     () =>
