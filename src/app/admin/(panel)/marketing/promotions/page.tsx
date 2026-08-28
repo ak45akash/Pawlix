@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, Input, Select } from "@/components/ui/field";
 import { MarketingPageHeader, RequireMarketing } from "@/components/admin/marketing-shell";
+import { TableSortSelect } from "@/components/admin/table-sort-select";
 import { suggestedCouponIdeas } from "@/data/marketing-seed";
+import { cmpDate, cmpNumber, cmpString, sortRows } from "@/lib/admin-table-sort";
 import { couponStatus } from "@/lib/marketing";
 import { useDemo } from "@/lib/demo-store";
 
@@ -21,7 +23,32 @@ export default function PromotionsPage() {
 function PromotionsTools() {
   const { state, saveCoupon, deleteEntity, can } = useDemo();
   const [open, setOpen] = useState(false);
+  const [sort, setSort] = useState("code-asc");
   const canManage = can("coupons.manage");
+  const sortOptions = [
+    { value: "code-asc", label: "Code (A–Z)" },
+    { value: "used-desc", label: "Most used" },
+    { value: "ends-asc", label: "Ending soon" },
+    { value: "status-active", label: "Active first" },
+  ];
+  const coupons = useMemo(
+    () =>
+      sortRows(state.coupons, sort, {
+        "code-asc": (a, b) => cmpString(a.code, b.code),
+        "used-desc": (a, b) => cmpNumber(b.used, a.used),
+        "ends-asc": (a, b) => cmpDate(a.endsAt, b.endsAt),
+        "status-active": (a, b) => {
+          const rank = (coupon: (typeof state.coupons)[number]) => {
+            const status = couponStatus(coupon);
+            if (status === "active") return 0;
+            if (status === "scheduled") return 1;
+            return 2;
+          };
+          return cmpNumber(rank(a), rank(b));
+        },
+      }),
+    [state.coupons, sort],
+  );
 
   return (
     <div className="space-y-8">
@@ -64,6 +91,11 @@ function PromotionsTools() {
         </div>
       </section>
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-medium">Coupons</h2>
+        <TableSortSelect options={sortOptions} value={sort} onChange={setSort} />
+      </div>
+
       <div className="overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border text-ink-muted">
@@ -77,7 +109,7 @@ function PromotionsTools() {
             </tr>
           </thead>
           <tbody>
-            {state.coupons.map((coupon) => {
+            {coupons.map((coupon) => {
               const status = couponStatus(coupon);
               return (
                 <tr key={coupon.id} className="border-b border-border last:border-0">

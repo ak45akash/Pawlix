@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { RequireCapability } from "@/components/admin/guard";
 import { SeoChecks, KeywordGroups, SeoMeter, SeoSuggestions, SerpPreview, scoreTone } from "@/components/admin/seo-meter";
+import { TableSortSelect } from "@/components/admin/table-sort-select";
+import { cmpNumber, cmpString, sortRows } from "@/lib/admin-table-sort";
 import { analyzeContent, extractKeywords, serpPreview, siteImprovementPlan, slugFromKeyword, suggestionsFromChecks } from "@/lib/seo";
 import { useDemo } from "@/lib/demo-store";
 
@@ -38,6 +40,13 @@ function SeoTools() {
   const [toolKeyword, setToolKeyword] = useState(state.seo.focusKeywords[0] ?? "");
   const [toolBody, setToolBody] = useState("");
   const [filter, setFilter] = useState<"all" | "blog" | "recipe" | "product">("all");
+  const [auditSort, setAuditSort] = useState("score-asc");
+  const auditSortOptions = [
+    { value: "score-asc", label: "Score (low first)" },
+    { value: "score-desc", label: "Score (high first)" },
+    { value: "label-asc", label: "Page (A–Z)" },
+    { value: "kind-asc", label: "Type (A–Z)" },
+  ];
 
   const snippet = serpPreview(title, description, "/", "pawlix.com");
   const draftReport = analyzeContent({
@@ -51,7 +60,15 @@ function SeoTools() {
   });
   const draftSuggestions = useMemo(() => suggestionsFromChecks(draftReport.checks), [draftReport.checks]);
   const extracted = extractKeywords(`${toolTitle} ${toolMeta} ${toolBody}`, 10);
-  const audit = plan.pages.filter((page) => filter === "all" || page.kind === filter);
+  const audit = useMemo(() => {
+    const filtered = plan.pages.filter((page) => filter === "all" || page.kind === filter);
+    return sortRows(filtered, auditSort, {
+      "score-asc": (a, b) => cmpNumber(a.score, b.score),
+      "score-desc": (a, b) => cmpNumber(b.score, a.score),
+      "label-asc": (a, b) => cmpString(a.label, b.label),
+      "kind-asc": (a, b) => cmpString(a.kind, b.kind),
+    });
+  }, [plan.pages, filter, auditSort]);
 
   function addFocusKeyword(term: string) {
     const existing = splitList(focusKeywords);
@@ -189,17 +206,20 @@ function SeoTools() {
       <section className="rounded-lg border border-border bg-surface p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-medium">Content audit</h2>
-          <div className="flex flex-wrap gap-2 text-sm">
-            {(["all", "blog", "recipe", "product"] as const).map((kind) => (
-              <button
-                key={kind}
-                type="button"
-                onClick={() => setFilter(kind)}
-                className={`rounded-full px-3 py-1 ${filter === kind ? "bg-ink text-canvas" : "bg-canvas text-ink-muted"}`}
-              >
-                {kind === "all" ? "All" : kind === "blog" ? "Blogs" : kind === "recipe" ? "Recipes" : "Products"}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap gap-2 text-sm">
+              {(["all", "blog", "recipe", "product"] as const).map((kind) => (
+                <button
+                  key={kind}
+                  type="button"
+                  onClick={() => setFilter(kind)}
+                  className={`rounded-full px-3 py-1 ${filter === kind ? "bg-ink text-canvas" : "bg-canvas text-ink-muted"}`}
+                >
+                  {kind === "all" ? "All" : kind === "blog" ? "Blogs" : kind === "recipe" ? "Recipes" : "Products"}
+                </button>
+              ))}
+            </div>
+            <TableSortSelect options={auditSortOptions} value={auditSort} onChange={setAuditSort} />
           </div>
         </div>
         <div className="mt-4 overflow-x-auto">

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
+import { TableSortSelect } from "@/components/admin/table-sort-select";
+import { cmpNumber, cmpString, sortRows } from "@/lib/admin-table-sort";
 import { slugify } from "@/lib/slug";
 import { useDemo } from "@/lib/demo-store";
 
@@ -25,17 +27,35 @@ export function EntityManager<T extends Entity>({
   const canDelete = can("catalogue.delete");
   const [editing, setEditing] = useState<Partial<T> | null>(null);
   const [error, setError] = useState("");
+  const [sort, setSort] = useState("order-asc");
+  const sortOptions = [
+    { value: "order-asc", label: "Display order" },
+    { value: "name-asc", label: "Name (A–Z)" },
+    { value: "name-desc", label: "Name (Z–A)" },
+  ];
+  const sortedRows = useMemo(
+    () =>
+      sortRows(rows, sort, {
+        "order-asc": (a, b) => cmpNumber(a.sortOrder, b.sortOrder),
+        "name-asc": (a, b) => cmpString(a.name, b.name),
+        "name-desc": (a, b) => cmpString(b.name, a.name),
+      }),
+    [rows, sort],
+  );
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-        <Button
-          size="sm"
-          onClick={() => setEditing({ name: "", slug: "", sortOrder: rows.length + 1 } as Partial<T>)}
-        >
-          Add
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <TableSortSelect options={sortOptions} value={sort} onChange={setSort} />
+          <Button
+            size="sm"
+            onClick={() => setEditing({ name: "", slug: "", sortOrder: rows.length + 1 } as Partial<T>)}
+          >
+            Add
+          </Button>
+        </div>
       </div>
       <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="w-full text-left text-sm">
@@ -48,7 +68,7 @@ export function EntityManager<T extends Entity>({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {sortedRows.map((row) => (
               <tr key={row.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3">{row.name}</td>
                 <td className="px-4 py-3 text-ink-muted">{row.slug}</td>

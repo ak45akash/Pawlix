@@ -32,6 +32,7 @@ import {
   type DashboardPeriod,
 } from "@/lib/dashboard-metrics";
 import { formatDate, formatInr } from "@/lib/format";
+import { cmpDate } from "@/lib/admin-table-sort";
 import { useDemo } from "@/lib/demo-store";
 import { cn } from "@/lib/utils/cn";
 
@@ -60,6 +61,10 @@ export default function AdminDashboardPage() {
   const channels = useMemo(() => channelBreakdown(periodOrders), [periodOrders]);
   const products = useMemo(() => topProducts(periodOrders, state), [periodOrders, state]);
   const statuses = useMemo(() => statusBreakdown(periodOrders), [periodOrders]);
+  const recentOrders = useMemo(
+    () => [...state.orders].sort((a, b) => cmpDate(b.createdAt, a.createdAt)).slice(0, 6),
+    [state.orders],
+  );
 
   const low = state.products.filter((product) => {
     const qty = availableStock(state, product);
@@ -181,7 +186,7 @@ export default function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {state.orders.slice(0, 6).map((order) => (
+                {recentOrders.map((order) => (
                   <tr key={order.id} className="border-b border-border last:border-0 hover:bg-canvas/60">
                     <td className="px-5 py-3">
                       <Link href={`/admin/orders/${order.id}`} className="font-medium hover:text-accent">

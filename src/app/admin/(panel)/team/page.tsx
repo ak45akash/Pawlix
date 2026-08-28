@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, Input, Select } from "@/components/ui/field";
+import { TableSortSelect } from "@/components/admin/table-sort-select";
+import { cmpString, sortRows } from "@/lib/admin-table-sort";
 import { RequireCapability } from "@/components/admin/guard";
 import { useDemo } from "@/lib/demo-store";
 import type { AdminMember } from "@/types/catalog";
@@ -21,6 +23,25 @@ function TeamManager() {
   const canManage = can("team.manage");
   const [editing, setEditing] = useState<Partial<AdminMember> | null>(null);
   const [error, setError] = useState("");
+  const [sort, setSort] = useState("name-asc");
+  const sortOptions = [
+    { value: "name-asc", label: "Name (A–Z)" },
+    { value: "role-asc", label: "Role (A–Z)" },
+    { value: "status-active", label: "Active first" },
+  ];
+  const members = useMemo(
+    () =>
+      sortRows(state.members, sort, {
+        "name-asc": (a, b) => cmpString(a.name, b.name),
+        "role-asc": (a, b) =>
+          cmpString(
+            state.roles.find((role) => role.id === a.roleId)?.name ?? "",
+            state.roles.find((role) => role.id === b.roleId)?.name ?? "",
+          ),
+        "status-active": (a, b) => cmpString(b.status, a.status),
+      }),
+    [state.members, state.roles, sort],
+  );
 
   function persist() {
     setError("");
@@ -52,6 +73,9 @@ function TeamManager() {
           </Button>
         ) : null}
       </div>
+      <div className="mt-4 flex justify-end">
+        <TableSortSelect options={sortOptions} value={sort} onChange={setSort} />
+      </div>
       <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border text-ink-muted">
@@ -64,7 +88,7 @@ function TeamManager() {
             </tr>
           </thead>
           <tbody>
-            {state.members.map((member) => {
+            {members.map((member) => {
               const role = state.roles.find((row) => row.id === member.roleId);
               return (
                 <tr key={member.id} className="border-b border-border last:border-0">

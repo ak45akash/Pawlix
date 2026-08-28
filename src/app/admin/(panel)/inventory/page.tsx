@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { Badge } from "@/components/ui/badge";
+import { TableSortSelect } from "@/components/admin/table-sort-select";
 import { availableStock, productVariants, stockStatus } from "@/lib/catalog";
+import { cmpNumber, cmpString, sortRows } from "@/lib/admin-table-sort";
 import { formatDate } from "@/lib/format";
 import { useDemo } from "@/lib/demo-store";
 
@@ -17,7 +19,22 @@ export default function InventoryPage() {
   const [reason, setReason] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
+  const [stockSort, setStockSort] = useState("qty-asc");
+  const stockSortOptions = [
+    { value: "qty-asc", label: "Stock (low first)" },
+    { value: "qty-desc", label: "Stock (high first)" },
+    { value: "name-asc", label: "Name (A–Z)" },
+  ];
   const variants = productVariants(state, productId);
+  const stockRows = useMemo(
+    () =>
+      sortRows(state.products, stockSort, {
+        "qty-asc": (a, b) => cmpNumber(availableStock(state, a), availableStock(state, b)),
+        "qty-desc": (a, b) => cmpNumber(availableStock(state, b), availableStock(state, a)),
+        "name-asc": (a, b) => cmpString(a.name, b.name),
+      }),
+    [state, stockSort],
+  );
 
   return (
     <div className="grid gap-8 lg:grid-cols-[340px_1fr]">
@@ -91,7 +108,10 @@ export default function InventoryPage() {
         <Button type="submit">{type === "OFFLINE_SALE" ? "Record sale" : "Update stock"}</Button>
       </form>
       <div>
-        <h2 className="font-medium">Current stock</h2>
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <h2 className="font-medium">Current stock</h2>
+          <TableSortSelect options={stockSortOptions} value={stockSort} onChange={setStockSort} />
+        </div>
         <div className="mt-3 overflow-x-auto rounded-lg border border-border bg-surface">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-border text-ink-muted">
@@ -101,7 +121,7 @@ export default function InventoryPage() {
               </tr>
             </thead>
             <tbody>
-              {state.products.map((product) => {
+              {stockRows.map((product) => {
                 const qty = availableStock(state, product);
                 const status = stockStatus(qty, product.lowStockThreshold);
                 return (

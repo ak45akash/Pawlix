@@ -1,25 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, Input, Select } from "@/components/ui/field";
+import { TableSortSelect } from "@/components/admin/table-sort-select";
+import { cmpDate, cmpNumber, cmpString, sortRows } from "@/lib/admin-table-sort";
 import { useDemo } from "@/lib/demo-store";
 
 export default function CouponsPage() {
   const { state, saveCoupon, deleteEntity, can } = useDemo();
   const [open, setOpen] = useState(false);
+  const [sort, setSort] = useState("code-asc");
   const canManage = can("coupons.manage");
+  const sortOptions = [
+    { value: "code-asc", label: "Code (A–Z)" },
+    { value: "used-desc", label: "Most used" },
+    { value: "ends-asc", label: "Ending soon" },
+    { value: "status-active", label: "Active first" },
+  ];
+  const coupons = useMemo(
+    () =>
+      sortRows(state.coupons, sort, {
+        "code-asc": (a, b) => cmpString(a.code, b.code),
+        "used-desc": (a, b) => cmpNumber(b.used, a.used),
+        "ends-asc": (a, b) => cmpDate(a.endsAt, b.endsAt),
+        "status-active": (a, b) => cmpNumber(Number(b.active), Number(a.active)),
+      }),
+    [state.coupons, sort],
+  );
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">Coupons</h1>
-        {canManage ? (
-          <Button size="sm" onClick={() => setOpen(true)}>
-            Add
-          </Button>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-3">
+          <TableSortSelect options={sortOptions} value={sort} onChange={setSort} />
+          {canManage ? (
+            <Button size="sm" onClick={() => setOpen(true)}>
+              Add
+            </Button>
+          ) : null}
+        </div>
       </div>
       <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="w-full text-left text-sm">
@@ -33,7 +55,7 @@ export default function CouponsPage() {
             </tr>
           </thead>
           <tbody>
-            {state.coupons.map((coupon) => (
+            {coupons.map((coupon) => (
               <tr key={coupon.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3 font-mono">{coupon.code}</td>
                 <td className="px-4 py-3">

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, Input } from "@/components/ui/field";
+import { TableSortSelect } from "@/components/admin/table-sort-select";
+import { cmpNumber, cmpString, sortRows } from "@/lib/admin-table-sort";
 import { slugify } from "@/lib/slug";
 import { useDemo } from "@/lib/demo-store";
 import type { Category } from "@/types/catalog";
@@ -15,7 +17,20 @@ export default function CategoriesPage() {
   const canDelete = can("catalogue.delete");
   const [editing, setEditing] = useState<Draft | null>(null);
   const [error, setError] = useState("");
-  const rows = state.categories.filter((item) => !item.archived).sort((a, b) => a.sortOrder - b.sortOrder);
+  const [sort, setSort] = useState("order-asc");
+  const sortOptions = [
+    { value: "order-asc", label: "Display order" },
+    { value: "name-asc", label: "Name (A–Z)" },
+    { value: "name-desc", label: "Name (Z–A)" },
+  ];
+  const rows = useMemo(() => {
+    const filtered = state.categories.filter((item) => !item.archived);
+    return sortRows(filtered, sort, {
+      "order-asc": (a, b) => cmpNumber(a.sortOrder, b.sortOrder),
+      "name-asc": (a, b) => cmpString(a.name, b.name),
+      "name-desc": (a, b) => cmpString(b.name, a.name),
+    });
+  }, [state.categories, sort]);
 
   function togglePet(draft: Draft, petId: string) {
     const current = draft.petTypeIds ?? [];
@@ -45,6 +60,9 @@ export default function CategoriesPage() {
         >
           Add
         </Button>
+      </div>
+      <div className="mt-4 flex justify-end">
+        <TableSortSelect options={sortOptions} value={sort} onChange={setSort} />
       </div>
       <div className="mt-6 overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="w-full text-left text-sm">

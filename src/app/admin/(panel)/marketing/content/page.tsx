@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { scoreTone } from "@/components/admin/seo-meter";
 import { MarketingPageHeader, RequireMarketing } from "@/components/admin/marketing-shell";
+import { TableSortSelect } from "@/components/admin/table-sort-select";
+import { cmpDate, cmpNumber, cmpString, sortRows } from "@/lib/admin-table-sort";
 import { contentCalendarRows } from "@/lib/marketing";
 import { useDemo } from "@/lib/demo-store";
 
@@ -65,8 +68,34 @@ function CalendarTable({
 }: {
   rows: ReturnType<typeof contentCalendarRows>;
 }) {
+  const [sort, setSort] = useState("updated-desc");
+  const sortOptions = [
+    { value: "updated-desc", label: "Recently updated" },
+    { value: "updated-asc", label: "Oldest update" },
+    { value: "score-asc", label: "SEO score (low first)" },
+    { value: "score-desc", label: "SEO score (high first)" },
+    { value: "title-asc", label: "Title (A–Z)" },
+    { value: "kind-asc", label: "Type (A–Z)" },
+  ];
+  const sortedRows = useMemo(
+    () =>
+      sortRows(rows, sort, {
+        "updated-desc": (a, b) => cmpDate(b.updatedAt, a.updatedAt),
+        "updated-asc": (a, b) => cmpDate(a.updatedAt, b.updatedAt),
+        "score-asc": (a, b) => cmpNumber(a.score, b.score),
+        "score-desc": (a, b) => cmpNumber(b.score, a.score),
+        "title-asc": (a, b) => cmpString(a.title, b.title),
+        "kind-asc": (a, b) => cmpString(a.kind, b.kind),
+      }),
+    [rows, sort],
+  );
+
   return (
-    <div className="mt-4 overflow-x-auto rounded-lg border border-border bg-surface">
+    <div className="mt-4 space-y-3">
+      <div className="flex justify-end">
+        <TableSortSelect options={sortOptions} value={sort} onChange={setSort} />
+      </div>
+      <div className="overflow-x-auto rounded-lg border border-border bg-surface">
       <table className="w-full text-left text-sm">
         <thead className="border-b border-border text-ink-muted">
           <tr>
@@ -79,7 +108,7 @@ function CalendarTable({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
+          {sortedRows.map((row) => (
             <tr key={row.id} className="border-b border-border last:border-0">
               <td className="px-4 py-3">{row.title}</td>
               <td className="px-4 py-3 capitalize">{row.kind}</td>
@@ -96,7 +125,8 @@ function CalendarTable({
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   );
 }

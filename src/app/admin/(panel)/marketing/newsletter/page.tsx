@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, Input } from "@/components/ui/field";
 import { MarketingPageHeader, RequireMarketing } from "@/components/admin/marketing-shell";
+import { TableSortSelect } from "@/components/admin/table-sort-select";
+import { cmpDate, cmpString, sortRows } from "@/lib/admin-table-sort";
 import { useDemo } from "@/lib/demo-store";
 
 export default function NewsletterPage() {
@@ -21,6 +23,23 @@ function NewsletterTools() {
   const [email, setEmail] = useState("");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  const [sort, setSort] = useState("subscribed-desc");
+  const sortOptions = [
+    { value: "subscribed-desc", label: "Newest first" },
+    { value: "subscribed-asc", label: "Oldest first" },
+    { value: "email-asc", label: "Email (A–Z)" },
+    { value: "source-asc", label: "Source (A–Z)" },
+  ];
+  const subscribers = useMemo(
+    () =>
+      sortRows(state.newsletterSubscribers, sort, {
+        "subscribed-desc": (a, b) => cmpDate(b.subscribedAt, a.subscribedAt),
+        "subscribed-asc": (a, b) => cmpDate(a.subscribedAt, b.subscribedAt),
+        "email-asc": (a, b) => cmpString(a.email, b.email),
+        "source-asc": (a, b) => cmpString(a.source, b.source),
+      }),
+    [state.newsletterSubscribers, sort],
+  );
 
   function exportCsv() {
     const rows = [["email", "source", "subscribed_at"], ...state.newsletterSubscribers.map((row) => [row.email, row.source, row.subscribedAt])];
@@ -80,6 +99,11 @@ function NewsletterTools() {
         </form>
       ) : null}
 
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-ink-muted">{subscribers.length} subscribers</p>
+        <TableSortSelect options={sortOptions} value={sort} onChange={setSort} />
+      </div>
+
       <div className="overflow-x-auto rounded-lg border border-border bg-surface">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border text-ink-muted">
@@ -91,7 +115,7 @@ function NewsletterTools() {
             </tr>
           </thead>
           <tbody>
-            {state.newsletterSubscribers.map((row) => (
+            {subscribers.map((row) => (
               <tr key={row.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3">{row.email}</td>
                 <td className="px-4 py-3">
